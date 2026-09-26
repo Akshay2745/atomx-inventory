@@ -1,4 +1,4 @@
-// ============ Your inventory data (loaded from the file) ============
+// ============ Your inventory data (loaded from the server) ============
 
 let devices = [];
 
@@ -14,13 +14,13 @@ const cancelButton = document.getElementById("cancel-add-btn");
 const errorText = document.getElementById("form-error");
 
 
-// ============ Load devices from the data file ============
+// ============ Load devices from the server ============
 
 async function loadDevices() {
   tableBody.innerHTML = `<tr><td colspan="5">Loading devices...</td></tr>`;
 
   try {
-    const response = await fetch("data/devices.json");
+    const response = await fetch("/api/devices");
 
     if (!response.ok) {
       throw new Error(`Could not load devices (status ${response.status})`);

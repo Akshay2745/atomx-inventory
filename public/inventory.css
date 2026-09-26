@@ -1,3 +1,5 @@
+/* ---------- Base ---------- */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -9,6 +11,8 @@ body {
   background-color: #f0f2f5;
   color: #333;
 }
+
+/* ---------- Navbar ---------- */
 
 .navbar {
   background-color: #1a3c6e;
@@ -45,6 +49,8 @@ body {
   border-bottom: 2px solid white;
 }
 
+/* ---------- Page layout ---------- */
+
 .container {
   max-width: 1100px;
   margin: 32px auto;
@@ -76,6 +82,13 @@ body {
   background-color: #2a5298;
 }
 
+a.btn-add {
+  display: inline-block;
+  text-decoration: none;
+}
+
+/* ---------- Summary cards ---------- */
+
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -102,6 +115,8 @@ body {
   font-weight: bold;
   color: #1a3c6e;
 }
+
+/* ---------- Tables ---------- */
 
 .table-wrapper {
   background-color: white;
@@ -133,6 +148,8 @@ tbody tr:hover {
   background-color: #f7f9fc;
 }
 
+/* ---------- Status badges ---------- */
+
 .status {
   padding: 4px 10px;
   border-radius: 20px;
@@ -155,34 +172,9 @@ tbody tr:hover {
   color: #b42323;
 }
 
-/* ---------- Events page styles ---------- */
-
-a.btn-add {
-  display: inline-block;
-  text-decoration: none;
-}
-
-.filter-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.tab {
-  padding: 8px 16px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  background-color: white;
-  color: #333;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.tab.active {
-  background-color: #1a3c6e;
-  border-color: #1a3c6e;
-  color: white;
+.status-damaged {
+  background-color: #fff4e0;
+  color: #a15c00;
 }
 
 .status-requested {
@@ -207,6 +199,31 @@ a.btn-add {
   color: #b42323;
 }
 
+/* ---------- Events page ---------- */
+
+.filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background-color: white;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.tab.active {
+  background-color: #1a3c6e;
+  border-color: #1a3c6e;
+  color: white;
+}
+
 .btn-small {
   display: inline-block;
   padding: 6px 14px;
@@ -223,8 +240,7 @@ a.btn-add {
   color: white;
 }
 
-
-/* ---------- Event detail page styles ---------- */
+/* ---------- Event detail page ---------- */
 
 .back-link {
   display: inline-block;
@@ -388,11 +404,107 @@ a.btn-add {
   border-color: #999;
 }
 
-/* ---------- Extra status ---------- */
+button.btn-secondary {
+  cursor: pointer;
+}
 
-.status-damaged {
+/* ---------- Return check page ---------- */
+
+.return-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.device-info strong {
+  display: block;
+  font-size: 15px;
+}
+
+.device-info small {
+  color: #666;
+  font-size: 13px;
+}
+
+.return-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.return-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.return-options label:has(input[value="returned"]:checked) {
+  background-color: #e3f6ec;
+  border-color: #1e7a4c;
+  color: #1e7a4c;
+}
+
+.return-options label:has(input[value="missing"]:checked) {
+  background-color: #fdeaea;
+  border-color: #b42323;
+  color: #b42323;
+}
+
+.return-options label:has(input[value="damaged"]:checked) {
   background-color: #fff4e0;
+  border-color: #a15c00;
   color: #a15c00;
+}
+
+.return-qty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.return-qty input {
+  width: 70px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.consumable-tag {
+  padding: 4px 10px;
+  border-radius: 20px;
+  background-color: #eceef1;
+  color: #555;
+  font-size: 13px;
+}
+
+.notes-field textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.info-box {
+  margin-bottom: 24px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background-color: #e6eefb;
+  color: #1a4fa0;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 /* ---------- Add device form ---------- */
@@ -435,10 +547,6 @@ a.btn-add {
   margin-bottom: 8px;
   color: #b42323;
   font-size: 14px;
-}
-
-button.btn-secondary {
-  cursor: pointer;
 }
 
 /* ---------- Search box ---------- */
