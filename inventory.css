@@ -154,3 +154,71 @@ tbody tr:hover {
   background-color: #fdeaea;
   color: #b42323;
 }
+
+/* ---------- Events page styles ---------- */
+
+a.btn-add {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background-color: white;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.tab.active {
+  background-color: #1a3c6e;
+  border-color: #1a3c6e;
+  color: white;
+}
+
+.status-requested {
+  background-color: #fff4e0;
+  color: #a15c00;
+}
+
+.status-out {
+  background-color: #f1e9fd;
+  color: #6b35b8;
+}
+
+.status-closed {
+  background-color: #eceef1;
+  color: #555;
+}
+
+.missing-note {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #b42323;
+}
+
+.btn-small {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid #1a3c6e;
+  border-radius: 6px;
+  color: #1a3c6e;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.btn-small:hover,
+.btn-small.primary {
+  background-color: #1a3c6e;
+  color: white;
+}
