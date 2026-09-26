@@ -387,3 +387,10 @@ a.btn-add {
 .btn-secondary:hover {
   border-color: #999;
 }
+
+/* ---------- Extra status ---------- */
+
+.status-damaged {
+  background-color: #fff4e0;
+  color: #a15c00;
+}
