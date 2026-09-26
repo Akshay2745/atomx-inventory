@@ -12,7 +12,7 @@
     <h1>Event Inventory Request</h1>
     <p class="subtitle">Fill in your event details and the items you need. The inventory team will review your request and confirm by email.</p>
 
-    <form action="request-success.html">
+    <form action="request-success.html" id="request-form">
 
       <fieldset>
         <legend>Event details</legend>
@@ -60,73 +60,24 @@
       <fieldset>
         <legend>Items needed</legend>
 
-        <div class="item-row">
-          <div>
-            <label for="item1">Item</label>
-            <select id="item1" name="item1" required>
-              <option value="">Select an item</option>
-              <option value="pos-terminal">POS Terminal</option>
-              <option value="soundbox">Soundbox</option>
-              <option value="card-reader">Card Reader</option>
-              <option value="qr-standee">QR Standee</option>
-              <option value="charger">Charger</option>
-              <option value="paper-roll">Paper Roll</option>
-            </select>
-          </div>
-          <div>
-            <label for="qty1">Quantity</label>
-            <input type="number" id="qty1" name="qty1" min="1" placeholder="0" required>
-          </div>
+        <div id="item-rows">
+          <!-- JavaScript adds item rows here -->
         </div>
 
-        <div class="item-row">
-          <div>
-            <label for="item2">Item</label>
-            <select id="item2" name="item2">
-              <option value="">Select an item</option>
-              <option value="pos-terminal">POS Terminal</option>
-              <option value="soundbox">Soundbox</option>
-              <option value="card-reader">Card Reader</option>
-              <option value="qr-standee">QR Standee</option>
-              <option value="charger">Charger</option>
-              <option value="paper-roll">Paper Roll</option>
-            </select>
-          </div>
-          <div>
-            <label for="qty2">Quantity</label>
-            <input type="number" id="qty2" name="qty2" min="1" placeholder="0">
-          </div>
-        </div>
-
-        <div class="item-row">
-          <div>
-            <label for="item3">Item</label>
-            <select id="item3" name="item3">
-              <option value="">Select an item</option>
-              <option value="pos-terminal">POS Terminal</option>
-              <option value="soundbox">Soundbox</option>
-              <option value="card-reader">Card Reader</option>
-              <option value="qr-standee">QR Standee</option>
-              <option value="charger">Charger</option>
-              <option value="paper-roll">Paper Roll</option>
-            </select>
-          </div>
-          <div>
-            <label for="qty3">Quantity</label>
-            <input type="number" id="qty3" name="qty3" min="1" placeholder="0">
-          </div>
-        </div>
-
-        <small class="hint">Leave extra rows empty if you don't need them</small>
+        <button type="button" class="btn-add-item" id="add-item-btn">+ Add another item</button>
       </fieldset>
 
       <label for="notes">Notes (optional)</label>
       <textarea id="notes" name="notes" rows="3" placeholder="Anything the inventory team should know"></textarea>
 
+      <p class="form-error" id="request-error"></p>
+
       <button type="submit" class="btn-submit">Submit request</button>
 
     </form>
   </div>
+
+  <script src="request.js"></script>
 
 </body>
 </html>
