@@ -11,6 +11,16 @@ const devices = [
 ];
 
 
+// ============ Page elements ============
+
+const searchInput = document.getElementById("search-input");
+const addButton = document.getElementById("add-device-btn");
+const addPanel = document.getElementById("add-device-panel");
+const addForm = document.getElementById("add-device-form");
+const cancelButton = document.getElementById("cancel-add-btn");
+const errorText = document.getElementById("form-error");
+
+
 // ============ Helper functions ============
 
 function countByStatus(status) {
@@ -40,6 +50,30 @@ function serialExists(serial) {
   return false;
 }
 
+function matchesSearch(device, searchText) {
+  const serial = device.serial.toLowerCase();
+  const name = device.name.toLowerCase();
+  const event = (device.event || "").toLowerCase();
+
+  return serial.includes(searchText) || name.includes(searchText) || event.includes(searchText);
+}
+
+function getVisibleDevices() {
+  const searchText = searchInput.value.trim().toLowerCase();
+
+  if (searchText === "") {
+    return devices;
+  }
+
+  const results = [];
+  for (const device of devices) {
+    if (matchesSearch(device, searchText)) {
+      results.push(device);
+    }
+  }
+  return results;
+}
+
 
 // ============ Show the summary cards ============
 
@@ -55,6 +89,7 @@ function renderSummary() {
 
 function renderTable() {
   const tableBody = document.getElementById("device-table-body");
+  const visibleDevices = getVisibleDevices();
   tableBody.innerHTML = "";
 
   if (devices.length === 0) {
@@ -62,7 +97,12 @@ function renderTable() {
     return;
   }
 
-  for (const device of devices) {
+  if (visibleDevices.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="5">No devices match your search.</td></tr>`;
+    return;
+  }
+
+  for (const device of visibleDevices) {
     tableBody.innerHTML += `
       <tr>
         <td>${device.serial}</td>
@@ -76,13 +116,14 @@ function renderTable() {
 }
 
 
-// ============ Add device form ============
+// ============ Search box ============
 
-const addButton = document.getElementById("add-device-btn");
-const addPanel = document.getElementById("add-device-panel");
-const addForm = document.getElementById("add-device-form");
-const cancelButton = document.getElementById("cancel-add-btn");
-const errorText = document.getElementById("form-error");
+searchInput.addEventListener("input", function () {
+  renderTable();
+});
+
+
+// ============ Add device form ============
 
 function closeAddForm() {
   addForm.reset();

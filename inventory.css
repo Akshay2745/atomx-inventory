@@ -440,3 +440,25 @@ a.btn-add {
 button.btn-secondary {
   cursor: pointer;
 }
+
+/* ---------- Search box ---------- */
+
+.toolbar {
+  margin-bottom: 16px;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #1a3c6e;
+}

@@ -21,68 +21,6 @@
 
     <div class="page-header">
       <h2>Master Inventory</h2>
-      <button class="btn-add">+ Add Device</button>
-    </div>
-
-    <div class="summary-cards">
-      <div class="card">
-        <h3>Total Devices</h3>
-        <p class="card-number" id="total-count">0</p>
-      </div>
-      <div class="card">
-        <h3>In Office</h3>
-        <p class="card-number" id="office-count">0</p>
-      </div>
-      <div class="card">
-        <h3>Assigned to Events</h3>
-        <p class="card-number" id="assigned-count">0</p>
-      </div>
-      <div class="card">
-        <h3>Missing</h3>
-        <p class="card-number" id="missing-count">0</p>
-      </div>
-    </div>
-
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Serial Number</th>
-            <th>Device</th>
-            <th>Category</th>
-            <th>Status</th>
-            <th>Current Event</th>
-          </tr>
-        </thead>
-        <tbody id="device-table-body">
-          <!-- JavaScript fills this in -->
-        </tbody>
-      </table>
-    </div>
-
-  </main><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atomx Inventory - Master Inventory</title>
-  <link rel="stylesheet" href="inventory.css">
-</head>
-<body>
-
-  <nav class="navbar">
-    <div class="logo">Atomx Inventory</div>
-    <ul class="nav-links">
-      <li><a href="inventory.html" class="active">Master Inventory</a></li>
-      <li><a href="events.html">Events</a></li>
-      <li><a href="index.html">Logout</a></li>
-    </ul>
-  </nav>
-
-  <main class="container">
-
-    <div class="page-header">
-      <h2>Master Inventory</h2>
       <button class="btn-add" id="add-device-btn">+ Add Device</button>
     </div>
 
@@ -141,6 +79,10 @@
       </div>
     </div>
 
+    <div class="toolbar">
+      <input type="search" id="search-input" class="search-input" placeholder="Search by serial number, device or event...">
+    </div>
+
     <div class="table-wrapper">
       <table>
         <thead>
@@ -159,11 +101,6 @@
     </div>
 
   </main>
-
-  <script src="inventory.js"></script>
-
-</body>
-</html>
 
   <script src="inventory.js"></script>
 

@@ -17,25 +17,6 @@
     </ul>
   </nav>
 
-  <main class="container"><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atomx Inventory - Events</title>
-  <link rel="stylesheet" href="inventory.css">
-</head>
-<body>
-
-  <nav class="navbar">
-    <div class="logo">Atomx Inventory</div>
-    <ul class="nav-links">
-      <li><a href="inventory.html">Master Inventory</a></li>
-      <li><a href="events.html" class="active">Events</a></li>
-      <li><a href="index.html">Logout</a></li>
-    </ul>
-  </nav>
-
   <main class="container">
 
     <div class="page-header">
@@ -46,28 +27,28 @@
     <div class="summary-cards">
       <div class="card">
         <h3>New Requests</h3>
-        <p class="card-number">2</p>
+        <p class="card-number" id="requested-count">0</p>
       </div>
       <div class="card">
         <h3>Assigned</h3>
-        <p class="card-number">1</p>
+        <p class="card-number" id="assigned-count">0</p>
       </div>
       <div class="card">
         <h3>Out at Event</h3>
-        <p class="card-number">2</p>
+        <p class="card-number" id="out-count">0</p>
       </div>
       <div class="card">
         <h3>Closed</h3>
-        <p class="card-number">1</p>
+        <p class="card-number" id="closed-count">0</p>
       </div>
     </div>
 
     <div class="filter-tabs">
-      <button class="tab active">All</button>
-      <button class="tab">Requested</button>
-      <button class="tab">Assigned</button>
-      <button class="tab">Out at Event</button>
-      <button class="tab">Closed</button>
+      <button class="tab active" data-status="All">All</button>
+      <button class="tab" data-status="Requested">Requested</button>
+      <button class="tab" data-status="Assigned">Assigned</button>
+      <button class="tab" data-status="Out at Event">Out at Event</button>
+      <button class="tab" data-status="Closed">Closed</button>
     </div>
 
     <div class="table-wrapper">
@@ -83,181 +64,15 @@
             <th>Action</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>Bengaluru Merchant Meetup</td>
-            <td>12 – 13 Oct 2026</td>
-            <td>Bengaluru</td>
-            <td>Priya Sharma</td>
-            <td>4 POS Terminal, 2 Soundbox</td>
-            <td><span class="status status-requested">Requested</span></td>
-            <td><a href="event-detail.html" class="btn-small primary">Review</a></td>
-          </tr>
-          <tr>
-            <td>Hyderabad Payments Forum</td>
-            <td>20 – 22 Oct 2026</td>
-            <td>Hyderabad</td>
-            <td>Rohit Verma</td>
-            <td>3 Card Reader, 5 Paper Roll</td>
-            <td><span class="status status-requested">Requested</span></td>
-            <td><a href="#" class="btn-small primary">Review</a></td>
-          </tr>
-          <tr>
-            <td>Chennai Trade Show</td>
-            <td>8 – 9 Oct 2026</td>
-            <td>Chennai</td>
-            <td>Sneha Iyer</td>
-            <td>2 POS Terminal, 1 QR Standee</td>
-            <td><span class="status status-assigned">Assigned</span></td>
-            <td><a href="#" class="btn-small">View</a></td>
-          </tr>
-          <tr>
-            <td>Mumbai Fintech Expo</td>
-            <td>28 Sep – 1 Oct 2026</td>
-            <td>Mumbai</td>
-            <td>Amit Patil</td>
-            <td>3 POS Terminal, 2 Charger, 5 Paper Roll</td>
-            <td><span class="status status-out">Out at Event</span></td>
-            <td><a href="return-check.html" class="btn-small">Check Return</a></td>
-          </tr>
-          <tr>
-            <td>Pune Retail Fair</td>
-            <td>25 – 27 Sep 2026</td>
-            <td>Pune</td>
-            <td>Neha Kulkarni</td>
-            <td>1 Soundbox</td>
-            <td><span class="status status-out">Out at Event</span></td>
-            <td><a href="#" class="btn-small">Check Return</a></td>
-          </tr>
-          <tr>
-            <td>Delhi Startup Summit</td>
-            <td>15 – 16 Sep 2026</td>
-            <td>New Delhi</td>
-            <td>Karan Mehta</td>
-            <td>1 Soundbox</td>
-            <td>
-              <span class="status status-closed">Closed</span>
-              <span class="missing-note">1 item missing</span>
-            </td>
-            <td><a href="#" class="btn-small">View</a></td>
-          </tr>
+        <tbody id="events-table-body">
+          <!-- JavaScript fills this in -->
         </tbody>
       </table>
     </div>
 
   </main>
 
-</body>
-</html>
-
-    <div class="page-header">
-      <h2>Events</h2>
-      <a href="request.html" target="_blank" rel="noopener" class="btn-add">Open request form</a>
-    </div>
-
-    <div class="summary-cards">
-      <div class="card">
-        <h3>New Requests</h3>
-        <p class="card-number">2</p>
-      </div>
-      <div class="card">
-        <h3>Assigned</h3>
-        <p class="card-number">1</p>
-      </div>
-      <div class="card">
-        <h3>Out at Event</h3>
-        <p class="card-number">2</p>
-      </div>
-      <div class="card">
-        <h3>Closed</h3>
-        <p class="card-number">1</p>
-      </div>
-    </div>
-
-    <div class="filter-tabs">
-      <button class="tab active">All</button>
-      <button class="tab">Requested</button>
-      <button class="tab">Assigned</button>
-      <button class="tab">Out at Event</button>
-      <button class="tab">Closed</button>
-    </div>
-
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Event Name</th>
-            <th>Dates</th>
-            <th>Location</th>
-            <th>Requested By</th>
-            <th>Items</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Bengaluru Merchant Meetup</td>
-            <td>12 – 13 Oct 2026</td>
-            <td>Bengaluru</td>
-            <td>Priya Sharma</td>
-            <td>4 POS Terminal, 2 Soundbox</td>
-            <td><span class="status status-requested">Requested</span></td>
-         <td><a href="event-detail.html" class="btn-small primary">Review</a></td>
-          </tr>
-          <tr>
-            <td>Hyderabad Payments Forum</td>
-            <td>20 – 22 Oct 2026</td>
-            <td>Hyderabad</td>
-            <td>Rohit Verma</td>
-            <td>3 Card Reader, 5 Paper Roll</td>
-            <td><span class="status status-requested">Requested</span></td>
-            <td><a href="#" class="btn-small primary">Review</a></td>
-          </tr>
-          <tr>
-            <td>Chennai Trade Show</td>
-            <td>8 – 9 Oct 2026</td>
-            <td>Chennai</td>
-            <td>Sneha Iyer</td>
-            <td>2 POS Terminal, 1 QR Standee</td>
-            <td><span class="status status-assigned">Assigned</span></td>
-            <td><a href="#" class="btn-small">View</a></td>
-          </tr>
-          <tr>
-            <td>Mumbai Fintech Expo</td>
-            <td>28 Sep – 1 Oct 2026</td>
-            <td>Mumbai</td>
-            <td>Amit Patil</td>
-            <td>1 POS Terminal</td>
-            <td><span class="status status-out">Out at Event</span></td>
-            <td><a href="#" class="btn-small">Check Return</a></td>
-          </tr>
-          <tr>
-            <td>Pune Retail Fair</td>
-            <td>25 – 27 Sep 2026</td>
-            <td>Pune</td>
-            <td>Neha Kulkarni</td>
-            <td>1 Soundbox</td>
-            <td><span class="status status-out">Out at Event</span></td>
-            <td><a href="#" class="btn-small">Check Return</a></td>
-          </tr>
-          <tr>
-            <td>Delhi Startup Summit</td>
-            <td>15 – 16 Sep 2026</td>
-            <td>New Delhi</td>
-            <td>Karan Mehta</td>
-            <td>1 Soundbox</td>
-            <td>
-              <span class="status status-closed">Closed</span>
-              <span class="missing-note">1 item missing</span>
-            </td>
-            <td><a href="#" class="btn-small">View</a></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-  </main>
+  <script src="events.js"></script>
 
 </body>
 </html>
