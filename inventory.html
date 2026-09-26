@@ -27,19 +27,19 @@
     <div class="summary-cards">
       <div class="card">
         <h3>Total Devices</h3>
-        <p class="card-number">6</p>
+        <p class="card-number" id="total-count">0</p>
       </div>
       <div class="card">
         <h3>In Office</h3>
-        <p class="card-number">3</p>
+        <p class="card-number" id="office-count">0</p>
       </div>
       <div class="card">
         <h3>Assigned to Events</h3>
-        <p class="card-number">2</p>
+        <p class="card-number" id="assigned-count">0</p>
       </div>
       <div class="card">
         <h3>Missing</h3>
-        <p class="card-number">1</p>
+        <p class="card-number" id="missing-count">0</p>
       </div>
     </div>
 
@@ -47,8 +47,61 @@
       <table>
         <thead>
           <tr>
+            <th>Serial Number</th>
+            <th>Device</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Current Event</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>POS-0001</td>
+            <td>POS Terminal</td>
+            <td>Payment Device</td>
+            <td><span class="status status-office">In Office</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>POS-0002</td>
+            <td>POS Terminal</td>
+            <td>Payment Device</td>
+            <td><span class="status status-assigned">Assigned</span></td>
+            <td>Mumbai Fintech Expo</td>
+          </tr>
+          <tr>
+            <td>POS-0003</td>
+            <td>POS Terminal</td>
+            <td>Payment Device</td>
+            <td><span class="status status-office">In Office</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>SBX-0001</td>
+            <td>Soundbox</td>
+            <td>Payment Device</td>
+            <td><span class="status status-assigned">Assigned</span></td>
+            <td>Pune Retail Fair</td>
+          </tr>
+          <tr>
+            <td>SBX-0002</td>
+            <td>Soundbox</td>
+            <td>Payment Device</td>
+            <td><span class="status status-missing">Missing</span></td>
+            <td>Delhi Startup Summit</td>
+          </tr>
+          <tr>
+            <td>QR-0001</td>
+            <td>QR Standee</td>
+            <td>Display Item</td>
+            <td><span class="status status-office">In Office</span></td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-              </main>
+  </main>
 
   <script src="inventory.js"></script>
 

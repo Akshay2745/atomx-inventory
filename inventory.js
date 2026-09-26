@@ -1,45 +1,4 @@
-// ============ Part 1: Your first JavaScript ============
-
-console.log("Hello from Atomx Inventory!");
-
-
-// ============ Part 2: Variables ============
-
-const companyName = "Atomx";
-let totalDevices = 6;
-const isOfficeOpen = true;
-
-console.log("Company:", companyName);
-console.log("Total devices:", totalDevices);
-console.log("Is office open?", isOfficeOpen);
-
-totalDevices = 7;
-console.log("After adding one device:", totalDevices);
-
-
-// ============ Part 3: An object (one device) ============
-
-const device = {
-  serial: "POS-0001",
-  name: "POS Terminal",
-  category: "Payment Device",
-  status: "In Office",
-  event: null
-};
-
-console.log("Device serial:", device.serial);
-console.log("Device status:", device.status);
-
-
-// ============ Part 4: An array (a list) ============
-
-const deviceTypes = ["POS Terminal", "Soundbox", "Card Reader", "QR Standee"];
-
-console.log("First device type:", deviceTypes[0]);
-console.log("Number of device types:", deviceTypes.length);
-
-
-// ============ Part 5: Your inventory as data ============
+// ============ Your inventory data ============
 
 const devices = [
   { serial: "POS-0001", name: "POS Terminal", category: "Payment Device", status: "In Office", event: null },
@@ -50,6 +9,49 @@ const devices = [
   { serial: "QR-0001",  name: "QR Standee",   category: "Display Item",   status: "In Office", event: null }
 ];
 
-console.log("All devices:", devices);
-console.log("Number of devices:", devices.length);
-console.log("Second device:", devices[1].serial, "is at", devices[1].event);
+
+// ============ Part 1: A loop (go through every device) ============
+
+for (const device of devices) {
+  console.log(`${device.serial} is ${device.status}`);
+}
+
+
+// ============ Part 2: Conditions (make decisions) ============
+
+for (const device of devices) {
+  if (device.status === "In Office") {
+    console.log(`${device.serial} is available for events`);
+  } else if (device.status === "Missing") {
+    console.log(`WARNING: ${device.serial} is missing from ${device.event}`);
+  } else {
+    console.log(`${device.serial} is currently at ${device.event}`);
+  }
+}
+
+
+// ============ Part 3: A function (a reusable counter) ============
+
+function countByStatus(status) {
+  let count = 0;
+
+  for (const device of devices) {
+    if (device.status === status) {
+      count++;
+    }
+  }
+
+  return count;
+}
+
+console.log("In Office:", countByStatus("In Office"));
+console.log("Assigned:", countByStatus("Assigned"));
+console.log("Missing:", countByStatus("Missing"));
+
+
+// ============ Part 4: Show the numbers on the page ============
+
+document.getElementById("total-count").textContent = devices.length;
+document.getElementById("office-count").textContent = countByStatus("In Office");
+document.getElementById("assigned-count").textContent = countByStatus("Assigned");
+document.getElementById("missing-count").textContent = countByStatus("Missing");
