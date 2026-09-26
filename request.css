@@ -1,0 +1,141 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
+  padding: 32px 16px;
+}
+
+.form-container {
+  background-color: white;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  color: #1a3c6e;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+fieldset {
+  border: 1px solid #e3e6ea;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+legend {
+  font-weight: bold;
+  color: #1a3c6e;
+  padding: 0 8px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  background-color: white;
+  margin-bottom: 16px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #1a3c6e;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.item-row {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 16px;
+}
+
+.hint {
+  display: block;
+  color: #888;
+  font-size: 13px;
+  margin-top: -10px;
+  margin-bottom: 8px;
+}
+
+.btn-submit {
+  display: inline-block;
+  width: 100%;
+  padding: 13px;
+  background-color: #1a3c6e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-submit:hover {
+  background-color: #2a5298;
+}
+
+.success {
+  text-align: center;
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  line-height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background-color: #e3f6ec;
+  color: #1e7a4c;
+  font-size: 32px;
+}
+
+.success .btn-submit {
+  width: auto;
+  padding: 12px 24px;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .form-container {
+    padding: 20px;
+  }
+}

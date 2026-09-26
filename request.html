@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atomx Inventory - Event Request</title>
+  <link rel="stylesheet" href="request.css">
+</head>
+<body>
+
+  <div class="form-container">
+    <h1>Event Inventory Request</h1>
+    <p class="subtitle">Fill in your event details and the items you need. The inventory team will review your request and confirm by email.</p>
+
+    <form action="request-success.html">
+
+      <fieldset>
+        <legend>Event details</legend>
+
+        <label for="event-name">Event name</label>
+        <input type="text" id="event-name" name="eventName" placeholder="e.g. Mumbai Fintech Expo" required>
+
+        <div class="form-row">
+          <div>
+            <label for="start-date">Start date</label>
+            <input type="date" id="start-date" name="startDate" required>
+          </div>
+          <div>
+            <label for="end-date">End date</label>
+            <input type="date" id="end-date" name="endDate" required>
+          </div>
+        </div>
+
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" placeholder="City and venue" required>
+      </fieldset>
+
+      <fieldset>
+        <legend>Your details</legend>
+
+        <div class="form-row">
+          <div>
+            <label for="requester-name">Your name</label>
+            <input type="text" id="requester-name" name="requesterName" required>
+          </div>
+          <div>
+            <label for="requester-email">Your email</label>
+            <input type="email" id="requester-email" name="requesterEmail" placeholder="you@company.com" required>
+          </div>
+        </div>
+
+        <label for="cc-emails">Extra emails for confirmation (optional)</label>
+        <input type="text" id="cc-emails" name="ccEmails" placeholder="e.g. coo@company.com, manager@company.com">
+        <small class="hint">Separate multiple emails with commas</small>
+      </fieldset>
+
+      <fieldset>
+        <legend>Items needed</legend>
+
+        <div class="item-row">
+          <div>
+            <label for="item1">Item</label>
+            <select id="item1" name="item1" required>
+              <option value="">Select an item</option>
+              <option value="pos-terminal">POS Terminal</option>
+              <option value="soundbox">Soundbox</option>
+              <option value="qr-standee">QR Standee</option>
+              <option value="charger">Charger</option>
+              <option value="paper-roll">Paper Roll</option>
+            </select>
+          </div>
+          <div>
+            <label for="qty1">Quantity</label>
+            <input type="number" id="qty1" name="qty1" min="1" placeholder="0" required>
+          </div>
+        </div>
+
+        <div class="item-row">
+          <div>
+            <label for="item2">Item</label>
+            <select id="item2" name="item2">
+              <option value="">Select an item</option>
+              <option value="pos-terminal">POS Terminal</option>
+              <option value="soundbox">Soundbox</option>
+              <option value="qr-standee">QR Standee</option>
+              <option value="charger">Charger</option>
+              <option value="paper-roll">Paper Roll</option>
+            </select>
+          </div>
+          <div>
+            <label for="qty2">Quantity</label>
+            <input type="number" id="qty2" name="qty2" min="1" placeholder="0">
+          </div>
+        </div>
+
+        <div class="item-row">
+          <div>
+            <label for="item3">Item</label>
+            <select id="item3" name="item3">
+              <option value="">Select an item</option>
+              <option value="pos-terminal">POS Terminal</option>
+              <option value="soundbox">Soundbox</option>
+              <option value="qr-standee">QR Standee</option>
+              <option value="charger">Charger</option>
+              <option value="paper-roll">Paper Roll</option>
+            </select>
+          </div>
+          <div>
+            <label for="qty3">Quantity</label>
+            <input type="number" id="qty3" name="qty3" min="1" placeholder="0">
+          </div>
+        </div>
+
+        <small class="hint">Leave extra rows empty if you don't need them</small>
+      </fieldset>
+
+      <label for="notes">Notes (optional)</label>
+      <textarea id="notes" name="notes" rows="3" placeholder="Anything the inventory team should know"></textarea>
+
+      <button type="submit" class="btn-submit">Submit request</button>
+
+    </form>
+  </div>
+
+</body>
+</html>
