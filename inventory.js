@@ -1,24 +1,40 @@
-// ============ Your inventory data ============
+// ============ Your inventory data (loaded from the file) ============
 
-const devices = [
-  { serial: "POS-0001", name: "POS Terminal", category: "Payment Device", status: "In Office", event: null },
-  { serial: "POS-0002", name: "POS Terminal", category: "Payment Device", status: "Assigned",  event: "Mumbai Fintech Expo" },
-  { serial: "POS-0003", name: "POS Terminal", category: "Payment Device", status: "In Office", event: null },
-  { serial: "POS-0004", name: "POS Terminal", category: "Payment Device", status: "In Office", event: null },
-  { serial: "SBX-0001", name: "Soundbox",     category: "Payment Device", status: "Assigned",  event: "Pune Retail Fair" },
-  { serial: "SBX-0002", name: "Soundbox",     category: "Payment Device", status: "Missing",   event: "Delhi Startup Summit" },
-  { serial: "QR-0001",  name: "QR Standee",   category: "Display Item",   status: "In Office", event: null }
-];
+let devices = [];
 
 
 // ============ Page elements ============
 
+const tableBody = document.getElementById("device-table-body");
 const searchInput = document.getElementById("search-input");
 const addButton = document.getElementById("add-device-btn");
 const addPanel = document.getElementById("add-device-panel");
 const addForm = document.getElementById("add-device-form");
 const cancelButton = document.getElementById("cancel-add-btn");
 const errorText = document.getElementById("form-error");
+
+
+// ============ Load devices from the data file ============
+
+async function loadDevices() {
+  tableBody.innerHTML = `<tr><td colspan="5">Loading devices...</td></tr>`;
+
+  try {
+    const response = await fetch("data/devices.json");
+
+    if (!response.ok) {
+      throw new Error(`Could not load devices (status ${response.status})`);
+    }
+
+    devices = await response.json();
+
+    renderSummary();
+    renderTable();
+  } catch (error) {
+    console.error(error);
+    tableBody.innerHTML = `<tr><td colspan="5">Sorry, the device list could not be loaded. Please refresh the page or try again later.</td></tr>`;
+  }
+}
 
 
 // ============ Helper functions ============
@@ -88,7 +104,6 @@ function renderSummary() {
 // ============ Build the device table ============
 
 function renderTable() {
-  const tableBody = document.getElementById("device-table-body");
   const visibleDevices = getVisibleDevices();
   tableBody.innerHTML = "";
 
@@ -168,5 +183,4 @@ addForm.addEventListener("submit", function (event) {
 
 // ============ Start ============
 
-renderSummary();
-renderTable();
+loadDevices();
