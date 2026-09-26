@@ -31,6 +31,15 @@ function getStatusClass(status) {
   return "status-closed";
 }
 
+function serialExists(serial) {
+  for (const device of devices) {
+    if (device.serial === serial) {
+      return true;
+    }
+  }
+  return false;
+}
+
 
 // ============ Show the summary cards ============
 
@@ -65,6 +74,55 @@ function renderTable() {
     `;
   }
 }
+
+
+// ============ Add device form ============
+
+const addButton = document.getElementById("add-device-btn");
+const addPanel = document.getElementById("add-device-panel");
+const addForm = document.getElementById("add-device-form");
+const cancelButton = document.getElementById("cancel-add-btn");
+const errorText = document.getElementById("form-error");
+
+function closeAddForm() {
+  addForm.reset();
+  errorText.textContent = "";
+  addPanel.classList.add("hidden");
+}
+
+addButton.addEventListener("click", function () {
+  addPanel.classList.remove("hidden");
+  document.getElementById("new-serial").focus();
+});
+
+cancelButton.addEventListener("click", function () {
+  closeAddForm();
+});
+
+addForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  const serial = document.getElementById("new-serial").value.trim().toUpperCase();
+  const name = document.getElementById("new-name").value;
+  const category = document.getElementById("new-category").value;
+
+  if (serialExists(serial)) {
+    errorText.textContent = `Serial number ${serial} already exists in the inventory.`;
+    return;
+  }
+
+  devices.push({
+    serial: serial,
+    name: name,
+    category: category,
+    status: "In Office",
+    event: null
+  });
+
+  renderSummary();
+  renderTable();
+  closeAddForm();
+});
 
 
 // ============ Start ============

@@ -394,3 +394,49 @@ a.btn-add {
   background-color: #fff4e0;
   color: #a15c00;
 }
+
+/* ---------- Add device form ---------- */
+
+.hidden {
+  display: none;
+}
+
+.add-form {
+  margin-bottom: 24px;
+}
+
+.add-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.add-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.add-form input,
+.add-form select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.form-error {
+  min-height: 20px;
+  margin-bottom: 8px;
+  color: #b42323;
+  font-size: 14px;
+}
+
+button.btn-secondary {
+  cursor: pointer;
+}
