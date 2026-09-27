@@ -1847,3 +1847,47 @@ th {
     box-shadow: none;
   }
 }
+
+/* ---------- Categories and device types pages ---------- */
+
+a.btn-secondary {
+  display: inline-block;
+}
+
+a.chip {
+  text-decoration: none;
+}
+
+a.chip:hover {
+  background-color: #dbe6fb;
+}
+
+.info-box a {
+  color: #1a4fa0;
+  font-weight: bold;
+}
+
+.table-actions {
+  text-align: right;
+}
+
+.btn-danger-small {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid #f0c2c2;
+  border-radius: 6px;
+  background-color: white;
+  color: #b42323;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-danger-small:hover:not(:disabled) {
+  background-color: #fdeaea;
+}
+
+.btn-danger-small:disabled {
+  border-color: #e6e8ec;
+  color: #bbb;
+  cursor: not-allowed;
+}

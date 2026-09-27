@@ -1,14 +1,11 @@
 {
-  "deviceTypes": [
-    "POS Terminal",
-    "Soundbox",
-    "Card Reader",
-    "QR Standee",
-    "MSWIPE"
-  ],
   "categories": [
-    "Payment Device",
-    "Display Item",
-    "Accessory"
+    "PAYMENT DEVICES"
+  ],
+  "types": [
+    {
+      "name": "MSWIPE",
+      "category": "PAYMENT DEVICES"
+    }
   ]
 }

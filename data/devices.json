@@ -1,1 +1,2306 @@
-[]
+[
+  {
+    "serial": "12001210210951",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705180487",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194126",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523190773",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194803",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123192759",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309200635",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191716",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210210668",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208210219",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191181",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523194165",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309201060",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701192522",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523190160",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309202784",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705180705",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523194962",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309205372",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309206786",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208210794",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701190092",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309202830",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309203989",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523191747",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705180442",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701192915",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194034",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523194265",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523192581",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309201283",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210211454",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309204448",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211648",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309200742",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309202434",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309202844",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210210994",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523194522",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210211769",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309205483",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701190136",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191142",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212664",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309201318",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016212267",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191728",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309200689",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309206541",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194156",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210213631",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309200311",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208214381",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211466",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191575",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212846",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309206119",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309206777",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523193680",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208210958",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211513",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210211066",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016211267",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212557",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705181812",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208213647",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210213513",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210213118",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194887",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208210713",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705180809",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523194120",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016211673",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210211832",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212235",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701190133",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309205293",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208210615",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210213003",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309202349",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523194841",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309205115",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211895",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210214111",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309205956",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016211160",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208213208",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212003",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701190139",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212551",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701193667",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309203037",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523190189",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701193471",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212205",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194263",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701193120",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309201354",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309204086",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309202134",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309201186",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123192265",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123192813",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212988",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211175",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211831",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123192644",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208214371",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705182068",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212575",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210211255",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123190062",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212762",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212838",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123190570",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208213696",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208213011",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211367",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309205584",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309202608",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309204335",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523190025",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523193944",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212369",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212765",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523191816",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016212030",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210213389",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309200644",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123191761",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208214654",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194725",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309205655",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210210602",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016212994",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016212690",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191862",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523193501",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194634",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309203560",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210211691",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212766",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212834",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210211674",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705180271",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211032",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194502",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191521",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194366",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210214437",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309206847",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210210673",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309206677",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000725232207",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211426",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309203151",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210210927",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309201622",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208214514",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212755",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701193615",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523191448",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000725230631",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191444",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212546",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212032",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000823234211",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309204538",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208214428",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016211900",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309207003",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016210989",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210213794",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191520",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211057",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123243609",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309204723",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210211502",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309206964",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212966",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000823232625",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208214570",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701190071",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016211404",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212347",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701192577",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191125",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212520",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705181213",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523190062",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309204783",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309205888",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523193730",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212637",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705181112",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123190395",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016211925",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309205131",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523191608",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212459",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212786",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309202301",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016211094",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208210802",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016211778",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016210712",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194350",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309201167",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194891",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208210497",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309202064",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016210391",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309204667",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194416",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309207124",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309201117",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701190095",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309201609",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701192916",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016210981",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211900",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210211270",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705182679",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211904",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000823231136",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001012242080",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000811231740",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705182306",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123191894",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701190135",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309203675",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309200637",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001016211819",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208210901",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523194073",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210214430",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212020",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309206783",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208212076",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123192778",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191901",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309206156",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701192516",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194533",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191872",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194913",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523190522",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210213670",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309205564",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523192825",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309203740",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208213667",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309200223",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309207004",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191639",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210213860",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208210021",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000823233543",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194786",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123191223",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701192325",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309201292",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210213872",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000523192278",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705182153",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123192471",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000123192973",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210210069",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701194720",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211565",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000705180217",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309202062",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701192285",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309203638",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210212005",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309201112",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309203279",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210215003",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701192352",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001210210434",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309204592",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208213481",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701193846",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211126",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701192412",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000309203486",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12000701191253",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  },
+  {
+    "serial": "12001208211295",
+    "name": "MSWIPE",
+    "category": "PAYMENT DEVICES",
+    "status": "In Office",
+    "event": null,
+    "history": []
+  }
+]

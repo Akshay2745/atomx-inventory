@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InventoryX - Device Types</title>
+  <link rel="stylesheet" href="inventory.css">
+</head>
+<body>
+
+  <main class="container">
+
+    <div class="page-header">
+      <div>
+        <h2>Device Types</h2>
+        <p class="page-subtitle">Step 2: create device types and choose the category each one belongs to.</p>
+      </div>
+      <a href="inventory.html" class="btn-secondary">Next: Add devices →</a>
+    </div>
+
+    <p class="info-box hidden" id="no-category-note">
+      You need at least one category before you can create a device type.
+      <a href="categories.html">Create a category first →</a>
+    </p>
+
+    <div class="card add-form" id="add-type-card">
+      <h3 class="section-title">Create a device type</h3>
+      <form id="add-type-form">
+        <div class="add-form-grid">
+          <div>
+            <label for="new-type-name">Device type name</label>
+            <input type="text" id="new-type-name" placeholder="e.g. Pinelabs" maxlength="40" required>
+          </div>
+          <div>
+            <label for="new-type-category">Category</label>
+            <select id="new-type-category" required></select>
+          </div>
+        </div>
+        <p class="form-error" id="type-error"></p>
+        <p class="form-success" id="type-success"></p>
+        <div class="form-actions">
+          <button type="submit" class="btn-add" id="create-type-btn">Create device type</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="toolbar">
+      <select id="category-filter" class="toolbar-select" aria-label="Filter by category">
+        <option value="All">All categories</option>
+      </select>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Device Type</th>
+            <th>Category</th>
+            <th>Devices</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="type-table-body">
+          <tr><td colspan="5">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <script src="device-types.js"></script>
+  <script src="layout.js"></script>
+
+</body>
+</html>

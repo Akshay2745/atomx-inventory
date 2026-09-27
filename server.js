@@ -15,10 +15,6 @@ const SETTINGS_FILE = path.join(__dirname, "data", "settings.json");
 
 const QUANTITY_ITEMS = ["Charger", "Paper Roll"];
 const RETURN_STATUSES = ["Returned", "Damaged", "Lost"];
-const DEFAULT_SETTINGS = {
-  deviceTypes: ["POS Terminal", "Soundbox", "Card Reader", "QR Standee"],
-  categories: ["Payment Device", "Display Item", "Accessory"]
-};
 const MAX_DEVICES_AT_ONCE = 500;
 const MAX_IMPORT_ROWS = 1000;
 
@@ -42,31 +38,68 @@ function nowText() {
   return new Date().toISOString();
 }
 
+function cleanName(value) {
+  return String(value || "").trim().replace(/\s+/g, " ");
+}
 
-// ============ Helpers: settings (device types and categories) ============
+
+// ============ Helpers: settings (categories and device types) ============
 
 function readSettings() {
   if (!fs.existsSync(SETTINGS_FILE)) {
-    saveJsonFile(SETTINGS_FILE, DEFAULT_SETTINGS);
-    console.log("Created settings file with default device types and categories");
+    saveJsonFile(SETTINGS_FILE, { categories: [], types: [] });
+    console.log("Created an empty settings file");
   }
-  return readJsonFile(SETTINGS_FILE);
+
+  const settings = readJsonFile(SETTINGS_FILE);
+  let changed = false;
+
+  if (!Array.isArray(settings.categories)) {
+    settings.categories = [];
+    changed = true;
+  }
+
+  if (!Array.isArray(settings.types)) {
+    settings.types = [];
+    const oldNames = Array.isArray(settings.deviceTypes) ? settings.deviceTypes : [];
+    for (const name of oldNames) {
+      settings.types.push({ name: name, category: "" });
+    }
+    changed = true;
+  }
+
+  if (settings.deviceTypes !== undefined) {
+    delete settings.deviceTypes;
+    changed = true;
+  }
+
+  if (changed) {
+    saveJsonFile(SETTINGS_FILE, settings);
+  }
+
+  return settings;
 }
 
 function settingsResponse(settings) {
+  const typeNames = [];
+  for (const type of settings.types) {
+    typeNames.push(type.name);
+  }
+
   return {
-    deviceTypes: settings.deviceTypes,
     categories: settings.categories,
+    types: settings.types,
+    deviceTypes: typeNames,
     quantityItems: QUANTITY_ITEMS
   };
 }
 
 function getAllowedItems(settings) {
-  return settings.deviceTypes.concat(QUANTITY_ITEMS);
+  return settingsResponse(settings).deviceTypes.concat(QUANTITY_ITEMS);
 }
 
 function findMatch(list, value) {
-  const lowerValue = value.toLowerCase();
+  const lowerValue = String(value || "").toLowerCase();
   for (const item of list) {
     if (item.toLowerCase() === lowerValue) {
       return item;
@@ -75,15 +108,23 @@ function findMatch(list, value) {
   return null;
 }
 
+function findType(settings, name) {
+  const lowerName = String(name || "").toLowerCase();
+  for (const type of settings.types) {
+    if (type.name.toLowerCase() === lowerName) {
+      return type;
+    }
+  }
+  return null;
+}
+
 
 // ============ Helpers: devices ============
 
-function buildDevice(rawSerial, rawName, rawCategory, settings) {
+function buildDevice(rawSerial, rawType, settings) {
   const serial = String(rawSerial || "").trim().toUpperCase();
-  const typedName = String(rawName || "").trim();
-  const typedCategory = String(rawCategory || "").trim();
-  const name = findMatch(settings.deviceTypes, typedName);
-  const category = findMatch(settings.categories, typedCategory);
+  const typedName = String(rawType || "").trim();
+  const type = findType(settings, typedName);
 
   if (serial === "") {
     return { error: "Serial number is missing." };
@@ -91,18 +132,15 @@ function buildDevice(rawSerial, rawName, rawCategory, settings) {
   if (serial.length > 40) {
     return { error: `Serial number ${serial} is too long (maximum 40 characters).` };
   }
-  if (!name) {
-    return { error: `"${typedName}" is not a device type. Add it under Manage types first.` };
-  }
-  if (!category) {
-    return { error: `"${typedCategory}" is not a category. Add it under Manage types first.` };
+  if (!type) {
+    return { error: `"${typedName}" is not a device type. Create it on the Device Types page first.` };
   }
 
   return {
     device: {
       serial: serial,
-      name: name,
-      category: category,
+      name: type.name,
+      category: type.category || "Uncategorized",
       status: "In Office",
       event: null,
       history: []
@@ -281,6 +319,7 @@ function formatDateRange(startDate, endDate) {
 
 function migrateData() {
   try {
+    readSettings();
     const events = readEvents();
     const devices = readJsonFile(DEVICES_FILE);
     const lookup = makeDeviceLookup(devices);
@@ -335,7 +374,7 @@ function migrateData() {
     if (changed) {
       saveJsonFile(DEVICES_FILE, devices);
       saveJsonFile(EVENTS_FILE, events);
-      console.log("Updated saved data for the event workspace");
+      console.log("Updated saved data to the latest format");
     }
   } catch (error) {
     console.error("Could not update saved data:", error);
@@ -354,43 +393,152 @@ app.get("/api/settings", function (req, res) {
   }
 });
 
-function handleAddSetting(req, res, listName, label) {
-  const name = String(req.body.name || "").trim().replace(/\s+/g, " ");
+
+// ============ API: categories ============
+
+app.post("/api/settings/categories", function (req, res) {
+  const name = cleanName(req.body.name);
 
   if (name === "") {
-    return res.status(400).json({ error: `Please enter a ${label} name.` });
+    return res.status(400).json({ error: "Please enter a category name." });
   }
   if (name.length > 40) {
-    return res.status(400).json({ error: `The ${label} name is too long (maximum 40 characters).` });
+    return res.status(400).json({ error: "The category name is too long (maximum 40 characters)." });
   }
 
   try {
     const settings = readSettings();
 
-    if (findMatch(settings[listName], name)) {
-      return res.status(409).json({ error: `"${name}" already exists.` });
+    if (findMatch(settings.categories, name)) {
+      return res.status(409).json({ error: `The category "${name}" already exists.` });
     }
-    if (listName === "deviceTypes" && findMatch(QUANTITY_ITEMS, name)) {
+
+    settings.categories.push(name);
+    saveJsonFile(SETTINGS_FILE, settings);
+
+    console.log(`Created category: ${name}`);
+    res.status(201).json(settingsResponse(settings));
+  } catch (error) {
+    console.error("Could not create category:", error);
+    res.status(500).json({ error: "Could not save the category. Please try again." });
+  }
+});
+
+app.delete("/api/settings/categories/:name", function (req, res) {
+  try {
+    const settings = readSettings();
+    const category = findMatch(settings.categories, req.params.name);
+
+    if (!category) {
+      return res.status(404).json({ error: "Category not found." });
+    }
+
+    const typesInCategory = [];
+    for (const type of settings.types) {
+      if (type.category === category) {
+        typesInCategory.push(type.name);
+      }
+    }
+
+    if (typesInCategory.length > 0) {
+      return res.status(409).json({ error: `"${category}" still has device types (${typesInCategory.join(", ")}). Delete those types first.` });
+    }
+
+    const remaining = [];
+    for (const item of settings.categories) {
+      if (item !== category) {
+        remaining.push(item);
+      }
+    }
+    settings.categories = remaining;
+    saveJsonFile(SETTINGS_FILE, settings);
+
+    console.log(`Deleted category: ${category}`);
+    res.json(settingsResponse(settings));
+  } catch (error) {
+    console.error("Could not delete category:", error);
+    res.status(500).json({ error: "Could not delete the category. Please try again." });
+  }
+});
+
+
+// ============ API: device types ============
+
+app.post("/api/settings/types", function (req, res) {
+  const name = cleanName(req.body.name);
+  const typedCategory = cleanName(req.body.category);
+
+  if (name === "") {
+    return res.status(400).json({ error: "Please enter a device type name." });
+  }
+  if (name.length > 40) {
+    return res.status(400).json({ error: "The device type name is too long (maximum 40 characters)." });
+  }
+  if (typedCategory === "") {
+    return res.status(400).json({ error: "Please choose a category for this device type." });
+  }
+
+  try {
+    const settings = readSettings();
+    const category = findMatch(settings.categories, typedCategory);
+
+    if (!category) {
+      return res.status(400).json({ error: `The category "${typedCategory}" does not exist. Create it on the Categories page first.` });
+    }
+    if (findType(settings, name)) {
+      return res.status(409).json({ error: `The device type "${name}" already exists.` });
+    }
+    if (findMatch(QUANTITY_ITEMS, name)) {
       return res.status(409).json({ error: `"${name}" is already used as a quantity item.` });
     }
 
-    settings[listName].push(name);
+    settings.types.push({ name: name, category: category });
     saveJsonFile(SETTINGS_FILE, settings);
 
-    console.log(`Added new ${label}: ${name}`);
+    console.log(`Created device type: ${name} (${category})`);
     res.status(201).json(settingsResponse(settings));
   } catch (error) {
-    console.error(`Could not add ${label}:`, error);
-    res.status(500).json({ error: `Could not save the ${label}. Please try again.` });
+    console.error("Could not create device type:", error);
+    res.status(500).json({ error: "Could not save the device type. Please try again." });
   }
-}
-
-app.post("/api/settings/device-types", function (req, res) {
-  handleAddSetting(req, res, "deviceTypes", "device type");
 });
 
-app.post("/api/settings/categories", function (req, res) {
-  handleAddSetting(req, res, "categories", "category");
+app.delete("/api/settings/types/:name", function (req, res) {
+  try {
+    const settings = readSettings();
+    const type = findType(settings, req.params.name);
+
+    if (!type) {
+      return res.status(404).json({ error: "Device type not found." });
+    }
+
+    const devices = readJsonFile(DEVICES_FILE);
+    let deviceCount = 0;
+    for (const device of devices) {
+      if (device.name === type.name) {
+        deviceCount++;
+      }
+    }
+
+    if (deviceCount > 0) {
+      return res.status(409).json({ error: `${deviceCount} device(s) use "${type.name}", so it can't be deleted.` });
+    }
+
+    const remaining = [];
+    for (const item of settings.types) {
+      if (item !== type) {
+        remaining.push(item);
+      }
+    }
+    settings.types = remaining;
+    saveJsonFile(SETTINGS_FILE, settings);
+
+    console.log(`Deleted device type: ${type.name}`);
+    res.json(settingsResponse(settings));
+  } catch (error) {
+    console.error("Could not delete device type:", error);
+    res.status(500).json({ error: "Could not delete the device type. Please try again." });
+  }
 });
 
 
@@ -431,7 +579,7 @@ app.post("/api/devices", function (req, res) {
 
   try {
     const settings = readSettings();
-    const first = buildDevice(req.body.serial, req.body.name, req.body.category, settings);
+    const first = buildDevice(req.body.serial, req.body.name, settings);
 
     if (first.error) {
       return res.status(400).json({ error: first.error });
@@ -476,7 +624,7 @@ app.post("/api/devices", function (req, res) {
 
     saveJsonFile(DEVICES_FILE, devices);
 
-    console.log(`Added ${added.length} device(s)`);
+    console.log(`Added ${added.length} ${first.device.name} device(s)`);
     res.status(201).json({ added: added });
   } catch (error) {
     console.error("Could not save devices:", error);
@@ -505,7 +653,7 @@ app.post("/api/devices/bulk", function (req, res) {
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const lineNumber = row.line || i + 2;
-      const result = buildDevice(row.serial, row.type, row.category, settings);
+      const result = buildDevice(row.serial, row.type, settings);
 
       if (result.error) {
         errors.push(`Row ${lineNumber}: ${result.error}`);

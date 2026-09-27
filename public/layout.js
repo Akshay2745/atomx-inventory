@@ -8,13 +8,14 @@ window.currentUser = { name: "Akshay", role: "Inventory Manager" };
 (function () {
 
   const PAGE_INFO = {
-    "dashboard.html":    { key: "dashboard", title: "Dashboard" },
-    "inventory.html":    { key: "inventory", title: "Master Inventory" },
-    "type-detail.html":  { key: "inventory", title: "Track Devices" },
-    "events.html":       { key: "events",    title: "Events" },
-    "event-detail.html": { key: "events",    title: "Event Details" },
-    "device-detail.html": { active: "inventory", title: "Device", parent: { label: "Master Inventory", href: "inventory.html" } },
-    "return-check.html": { key: "events",    title: "Return Check" }
+    "dashboard.html":     { key: "dashboard",    title: "Dashboard" },
+    "categories.html":    { key: "categories",   title: "Categories" },
+    "device-types.html":  { key: "device-types", title: "Device Types" },
+    "inventory.html":     { key: "inventory",    title: "Master Inventory" },
+    "type-detail.html":   { key: "inventory",    title: "Track Devices" },
+    "device-detail.html": { key: "inventory",    title: "Device" },
+    "events.html":        { key: "events",       title: "Events" },
+    "event-detail.html":  { key: "events",       title: "Event Details" }
   };
 
   const fileName = window.location.pathname.split("/").pop() || "dashboard.html";
@@ -24,6 +25,8 @@ window.currentUser = { name: "Akshay", role: "Inventory Manager" };
 
   const ICONS = {
     dashboard: `${svgStart}<rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>`,
+    categories: `${svgStart}<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`,
+    types: `${svgStart}<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>`,
     inventory: `${svgStart}<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
     events: `${svgStart}<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
     create: `${svgStart}<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`,
@@ -53,19 +56,21 @@ window.currentUser = { name: "Akshay", role: "Inventory Manager" };
     shell.className = "app-shell";
     shell.innerHTML = `
       <aside class="sidebar">
-          <div class="sidebar-brand">
-        <span class="brand-logo">IX</span>
-        <div class="brand-text">
-          <strong>InventoryX</strong>
-          <small>by AtomX</small>
+        <div class="sidebar-brand">
+          <span class="brand-logo">IX</span>
+          <div class="brand-text">
+            <strong>InventoryX</strong>
+            <small>by AtomX</small>
+          </div>
         </div>
-      </div>
 
         <nav class="sidebar-nav" aria-label="Main navigation">
           <p class="nav-section-title">Main</p>
           ${navItem("dashboard", "dashboard.html", ICONS.dashboard, "Dashboard")}
 
           <p class="nav-section-title">Inventory</p>
+          ${navItem("categories", "categories.html", ICONS.categories, "Categories")}
+          ${navItem("device-types", "device-types.html", ICONS.types, "Device Types")}
           ${navItem("inventory", "inventory.html", ICONS.inventory, "Master Inventory")}
 
           <p class="nav-section-title">Events</p>
@@ -87,7 +92,7 @@ window.currentUser = { name: "Akshay", role: "Inventory Manager" };
         <header class="topbar">
           <div class="topbar-left">
             <button type="button" class="menu-btn" id="menu-btn" aria-label="Open menu">${ICONS.menu}</button>
-            <p class="breadcrumb"><span>Atomx Inventory</span> / <strong>${pageInfo.title}</strong></p>
+            <p class="breadcrumb"><span>InventoryX</span> / <strong>${pageInfo.title}</strong></p>
           </div>
           <div class="topbar-right">
             <a href="events.html" class="bell-btn" aria-label="New event requests">
