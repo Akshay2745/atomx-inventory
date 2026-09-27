@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atomx Inventory - Dashboard</title>
+  <link rel="stylesheet" href="inventory.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">Atomx Inventory</div>
+    <ul class="nav-links">
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="inventory.html">Master Inventory</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="index.html">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+
+    <div class="page-header">
+      <div>
+        <h2>Dashboard</h2>
+        <p class="page-subtitle" id="today-date"></p>
+      </div>
+      <a href="request.html" target="_blank" rel="noopener" class="btn-add">Open request form</a>
+    </div>
+
+    <p class="dashboard-error hidden" id="dashboard-error">
+      Sorry, the dashboard data could not be loaded. Please check that the server is running and refresh the page.
+    </p>
+
+    <div class="summary-cards">
+      <div class="card">
+        <h3>Total Devices</h3>
+        <p class="card-number" id="total-count">0</p>
+      </div>
+      <div class="card">
+        <h3>In Office</h3>
+        <p class="card-number" id="office-count">0</p>
+      </div>
+      <div class="card">
+        <h3>Out at Events</h3>
+        <p class="card-number" id="assigned-count">0</p>
+      </div>
+      <div class="card">
+        <h3>Missing or Damaged</h3>
+        <p class="card-number" id="missing-count">0</p>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+
+      <div class="card">
+        <h3 class="section-title">Needs your attention</h3>
+        <ul class="panel-list" id="attention-list">
+          <li class="empty-note">Loading...</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">Upcoming events</h3>
+        <ul class="panel-list" id="upcoming-list">
+          <li class="empty-note">Loading...</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">Devices by type</h3>
+        <div id="type-list">
+          <p class="empty-note">Loading...</p>
+        </div>
+        <div class="bar-legend">
+          <span><span class="legend-dot bar-office"></span>In office</span>
+          <span><span class="legend-dot bar-assigned"></span>At events</span>
+          <span><span class="legend-dot bar-missing"></span>Missing or damaged</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">Missing or damaged devices</h3>
+        <ul class="panel-list" id="missing-list">
+          <li class="empty-note">Loading...</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="dashboard.js"></script>
+
+</body>
+</html>

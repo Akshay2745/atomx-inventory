@@ -1,0 +1,8 @@
+[
+  { "name": "Bengaluru Merchant Meetup", "startDate": "2026-10-12", "dates": "12 – 13 Oct 2026",    "location": "Bengaluru", "requestedBy": "Priya Sharma",  "items": "4 POS Terminal, 2 Soundbox",              "status": "Requested",    "missing": 0 },
+  { "name": "Hyderabad Payments Forum",  "startDate": "2026-10-20", "dates": "20 – 22 Oct 2026",    "location": "Hyderabad", "requestedBy": "Rohit Verma",   "items": "3 Card Reader, 5 Paper Roll",             "status": "Requested",    "missing": 0 },
+  { "name": "Chennai Trade Show",        "startDate": "2026-10-08", "dates": "8 – 9 Oct 2026",      "location": "Chennai",   "requestedBy": "Sneha Iyer",    "items": "2 POS Terminal, 1 QR Standee",            "status": "Assigned",     "missing": 0 },
+  { "name": "Mumbai Fintech Expo",       "startDate": "2026-09-28", "dates": "28 Sep – 1 Oct 2026", "location": "Mumbai",    "requestedBy": "Amit Patil",    "items": "3 POS Terminal, 2 Charger, 5 Paper Roll", "status": "Out at Event", "missing": 0 },
+  { "name": "Pune Retail Fair",          "startDate": "2026-09-25", "dates": "25 – 27 Sep 2026",    "location": "Pune",      "requestedBy": "Neha Kulkarni", "items": "1 Soundbox",                              "status": "Out at Event", "missing": 0 },
+  { "name": "Delhi Startup Summit",      "startDate": "2026-09-15", "dates": "15 – 16 Sep 2026",    "location": "New Delhi", "requestedBy": "Karan Mehta",   "items": "1 Soundbox",                              "status": "Closed",       "missing": 1 }
+]
