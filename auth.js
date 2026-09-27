@@ -19,6 +19,7 @@ const PUBLIC_FILES = [
 
 // API routes anyone can use without signing in
 const PUBLIC_API = [
+  "GET /api/health",
   "GET /api/setup-status",
   "POST /api/setup",
   "POST /api/login",

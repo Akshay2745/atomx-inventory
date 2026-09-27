@@ -17,6 +17,28 @@ const RETURN_STATUSES = ["Returned", "Damaged", "Lost"];
 const MAX_DEVICES_AT_ONCE = 500;
 const MAX_IMPORT_ROWS = 1000;
 
+if (process.env.TRUST_PROXY === "true") {
+  app.set("trust proxy", 1);
+}
+
+app.disable("x-powered-by");
+
+app.use(function (req, res, next) {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "same-origin");
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+  );
+  if (req.secure) {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000");
+  }
+  next();
+});
+
+
+
 app.use(express.json({ limit: "2mb" }));
 app.use(auth.requireLogin);
 app.use(express.static(path.join(__dirname, "public")));
@@ -1037,6 +1059,17 @@ app.post("/api/events/:id/email/confirmation", async function (req, res) {
   }
 });
 
+
+// ============ Health check (used by hosting services to see if the app is working) ============
+
+app.get("/api/health", async function (req, res) {
+  try {
+    await db.query("SELECT 1");
+    res.json({ status: "ok", time: new Date().toISOString() });
+  } catch (error) {
+    res.status(503).json({ status: "database unavailable" });
+  }
+});
 
 // ============ Start the server ============
 
