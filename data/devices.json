@@ -345,15 +345,47 @@
     "category": "PAYMENT DEVICES",
     "status": "In Office",
     "event": null,
-    "history": []
+    "history": [
+      {
+        "action": "Assigned",
+        "eventId": "EVT-1790502798276",
+        "eventName": "testing 1",
+        "date": "2026-09-27T09:55:11.202Z",
+        "note": ""
+      },
+      {
+        "action": "Returned",
+        "eventId": "EVT-1790502798276",
+        "eventName": "testing 1",
+        "date": "2026-09-27T09:59:41.417Z",
+        "note": ""
+      }
+    ],
+    "eventId": null
   },
   {
     "serial": "12000701190092",
     "name": "MSWIPE",
     "category": "PAYMENT DEVICES",
-    "status": "In Office",
-    "event": null,
-    "history": []
+    "status": "Lost",
+    "event": "testing 1",
+    "history": [
+      {
+        "action": "Assigned",
+        "eventId": "EVT-1790502798276",
+        "eventName": "testing 1",
+        "date": "2026-09-27T09:55:11.202Z",
+        "note": ""
+      },
+      {
+        "action": "Lost",
+        "eventId": "EVT-1790502798276",
+        "eventName": "testing 1",
+        "date": "2026-09-27T09:59:47.735Z",
+        "note": ""
+      }
+    ],
+    "eventId": "EVT-1790502798276"
   },
   {
     "serial": "12000309202830",
