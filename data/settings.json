@@ -3,7 +3,8 @@
     "POS Terminal",
     "Soundbox",
     "Card Reader",
-    "QR Standee"
+    "QR Standee",
+    "MSWIPE"
   ],
   "categories": [
     "Payment Device",

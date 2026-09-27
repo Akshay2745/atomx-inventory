@@ -3,20 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atomx Inventory - Track Devices</title>
+  <title>InventoryX - Track Devices</title>
   <link rel="stylesheet" href="inventory.css">
 </head>
 <body>
-
-  <nav class="navbar">
-    <div class="logo">Atomx Inventory</div>
-    <ul class="nav-links">
-      <li><a href="dashboard.html">Dashboard</a></li>
-      <li><a href="inventory.html" class="active">Master Inventory</a></li>
-      <li><a href="events.html">Events</a></li>
-      <li><a href="index.html">Logout</a></li>
-    </ul>
-  </nav>
 
   <main class="container">
 
@@ -31,6 +21,59 @@
           <span class="type-icon" id="type-icon"></span>
           <h2 id="type-name"></h2>
           <span class="type-badge">Serials</span>
+        </div>
+        <div class="header-actions">
+          <button type="button" class="btn-secondary" id="import-btn">Import CSV</button>
+          <button type="button" class="btn-add" id="add-device-btn">+ Add Devices</button>
+        </div>
+      </div>
+
+      <p class="form-success" id="page-success"></p>
+
+      <!-- Manual add panel -->
+      <div class="card add-form hidden" id="add-device-panel">
+        <h3 class="section-title" id="add-title">Add devices</h3>
+        <form id="add-device-form">
+          <div class="add-form-grid">
+            <div>
+              <label for="new-serial">Serial number</label>
+              <input type="text" id="new-serial" required>
+            </div>
+            <div>
+              <label for="new-category">Category</label>
+              <select id="new-category" required></select>
+            </div>
+            <div>
+              <label for="new-quantity">Quantity</label>
+              <input type="number" id="new-quantity" min="1" max="500" value="1" required>
+            </div>
+          </div>
+          <p class="form-hint" id="serial-preview"></p>
+          <p class="form-error" id="form-error"></p>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" id="cancel-add-btn">Cancel</button>
+            <button type="submit" class="btn-add" id="save-device-btn">Save</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- CSV import panel -->
+      <div class="card add-form hidden" id="import-panel">
+        <h3 class="section-title" id="import-title">Import devices from a CSV file</h3>
+        <ol class="import-steps">
+          <li>Download the sample file. It's already set up for this device type.</li>
+          <li>Enter one serial number per row, with its category. Keep the first row (the column names) as it is.</li>
+          <li>Save it as CSV. In Excel: File → Save As → "CSV (Comma delimited)".</li>
+          <li>Choose the file below and click Import devices.</li>
+        </ol>
+        <div class="import-actions">
+          <button type="button" class="btn-secondary" id="download-sample-btn">Download sample CSV</button>
+          <input type="file" id="csv-file" accept=".csv,text/csv">
+        </div>
+        <div class="import-results hidden" id="import-results"></div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="cancel-import-btn">Cancel</button>
+          <button type="button" class="btn-add" id="start-import-btn">Import devices</button>
         </div>
       </div>
 
@@ -48,7 +91,7 @@
           <p class="card-number" id="assigned-count">0</p>
         </div>
         <div class="card">
-          <h3>Missing or Damaged</h3>
+          <h3>Lost or Damaged</h3>
           <p class="card-number" id="missing-count">0</p>
         </div>
       </div>
@@ -57,7 +100,7 @@
         <button class="tab active" data-status="All">All</button>
         <button class="tab" data-status="In Office">In Office</button>
         <button class="tab" data-status="Assigned">Assigned</button>
-         <button class="tab" data-status="Lost">Lost</button>
+        <button class="tab" data-status="Lost">Lost</button>
         <button class="tab" data-status="Damaged">Damaged</button>
       </div>
 
@@ -87,8 +130,9 @@
     </div>
 
   </main>
-  <script src="layout.js"></script>
+
   <script src="type-detail.js"></script>
+  <script src="layout.js"></script>
 
 </body>
 </html>

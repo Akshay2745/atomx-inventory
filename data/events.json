@@ -18,7 +18,8 @@
         "name": "Soundbox",
         "qty": 2
       }
-    ]
+    ],
+    "assignments": []
   },
   {
     "name": "Hyderabad Payments Forum",
@@ -39,7 +40,8 @@
         "name": "Paper Roll",
         "qty": 5
       }
-    ]
+    ],
+    "assignments": []
   },
   {
     "name": "Chennai Trade Show",
@@ -60,7 +62,8 @@
         "name": "QR Standee",
         "qty": 1
       }
-    ]
+    ],
+    "assignments": []
   },
   {
     "name": "Mumbai Fintech Expo",
@@ -85,6 +88,16 @@
         "name": "Paper Roll",
         "qty": 5
       }
+    ],
+    "assignments": [
+      {
+        "serial": "POS-0002",
+        "name": "POS Terminal",
+        "assignedAt": null,
+        "returnStatus": null,
+        "returnedAt": null,
+        "note": ""
+      }
     ]
   },
   {
@@ -102,6 +115,16 @@
         "name": "Soundbox",
         "qty": 1
       }
+    ],
+    "assignments": [
+      {
+        "serial": "SBX-0001",
+        "name": "Soundbox",
+        "assignedAt": null,
+        "returnStatus": null,
+        "returnedAt": null,
+        "note": ""
+      }
     ]
   },
   {
@@ -118,6 +141,16 @@
       {
         "name": "Soundbox",
         "qty": 1
+      }
+    ],
+    "assignments": [
+      {
+        "serial": "SBX-0002",
+        "name": "Soundbox",
+        "assignedAt": null,
+        "returnStatus": "Lost",
+        "returnedAt": null,
+        "note": ""
       }
     ]
   },
@@ -144,15 +177,43 @@
     "status": "Assigned",
     "missing": 0,
     "createdAt": "2026-09-27T07:21:29.166Z",
-    "assignedDevices": [
-      "POS-0001",
-      "POS-0003",
-      "POS-0004",
-      "1234"
-    ],
     "assignedQuantities": [],
     "sendEmail": true,
-    "assignedAt": "2026-09-27T07:31:00.400Z"
+    "assignedAt": "2026-09-27T07:31:00.400Z",
+    "assignments": [
+      {
+        "serial": "POS-0001",
+        "name": "POS Terminal",
+        "assignedAt": "2026-09-27T07:31:00.400Z",
+        "returnStatus": "Returned",
+        "returnedAt": "2026-09-27T08:45:01.947Z",
+        "note": ""
+      },
+      {
+        "serial": "POS-0003",
+        "name": "POS Terminal",
+        "assignedAt": "2026-09-27T07:31:00.400Z",
+        "returnStatus": "Returned",
+        "returnedAt": "2026-09-27T08:45:01.947Z",
+        "note": ""
+      },
+      {
+        "serial": "POS-0004",
+        "name": "POS Terminal",
+        "assignedAt": "2026-09-27T07:31:00.400Z",
+        "returnStatus": "Returned",
+        "returnedAt": "2026-09-27T08:45:01.947Z",
+        "note": ""
+      },
+      {
+        "serial": "1234",
+        "name": "POS Terminal",
+        "assignedAt": "2026-09-27T07:31:00.400Z",
+        "returnStatus": "Returned",
+        "returnedAt": "2026-09-27T08:45:01.947Z",
+        "note": ""
+      }
+    ]
   },
   {
     "id": "EVT-1790494694001",
@@ -176,6 +237,7 @@
     "source": "Staff request",
     "status": "Requested",
     "missing": 0,
-    "createdAt": "2026-09-27T07:38:14.078Z"
+    "createdAt": "2026-09-27T07:38:14.078Z",
+    "assignments": []
   }
 ]

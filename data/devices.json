@@ -3,130 +3,183 @@
     "serial": "POS-0001",
     "name": "POS Terminal",
     "category": "Payment Device",
-    "status": "Assigned",
-    "event": "testing 1",
-    "eventId": "EVT-1790493689090"
+    "status": "In Office",
+    "event": null,
+    "eventId": null,
+    "history": [
+      {
+        "action": "Returned",
+        "eventId": "EVT-1790493689090",
+        "eventName": "testing 1",
+        "date": "2026-09-27T08:45:01.947Z",
+        "note": ""
+      }
+    ]
   },
   {
     "serial": "POS-0002",
     "name": "POS Terminal",
     "category": "Payment Device",
     "status": "Assigned",
-    "event": "Mumbai Fintech Expo"
+    "event": "Mumbai Fintech Expo",
+    "history": [],
+    "eventId": "EVT-1790494197997-4"
   },
   {
     "serial": "POS-0003",
     "name": "POS Terminal",
     "category": "Payment Device",
-    "status": "Assigned",
-    "event": "testing 1",
-    "eventId": "EVT-1790493689090"
+    "status": "In Office",
+    "event": null,
+    "eventId": null,
+    "history": [
+      {
+        "action": "Returned",
+        "eventId": "EVT-1790493689090",
+        "eventName": "testing 1",
+        "date": "2026-09-27T08:45:01.947Z",
+        "note": ""
+      }
+    ]
   },
   {
     "serial": "POS-0004",
     "name": "POS Terminal",
     "category": "Payment Device",
-    "status": "Assigned",
-    "event": "testing 1",
-    "eventId": "EVT-1790493689090"
+    "status": "In Office",
+    "event": null,
+    "eventId": null,
+    "history": [
+      {
+        "action": "Returned",
+        "eventId": "EVT-1790493689090",
+        "eventName": "testing 1",
+        "date": "2026-09-27T08:45:01.947Z",
+        "note": ""
+      }
+    ]
   },
   {
     "serial": "SBX-0001",
     "name": "Soundbox",
     "category": "Payment Device",
     "status": "Assigned",
-    "event": "Pune Retail Fair"
+    "event": "Pune Retail Fair",
+    "history": [],
+    "eventId": "EVT-1790494197997-5"
   },
   {
     "serial": "SBX-0002",
     "name": "Soundbox",
     "category": "Payment Device",
-    "status": "Missing",
-    "event": "Delhi Startup Summit"
+    "status": "Lost",
+    "event": "Delhi Startup Summit",
+    "history": [],
+    "eventId": "EVT-1790494197997-6"
   },
   {
     "serial": "QR-0001",
     "name": "QR Standee",
     "category": "Display Item",
     "status": "In Office",
-    "event": null
+    "event": null,
+    "history": []
   },
   {
     "serial": "1234",
     "name": "POS Terminal",
     "category": "Payment Device",
-    "status": "Assigned",
-    "event": "testing 1",
-    "eventId": "EVT-1790493689090"
+    "status": "In Office",
+    "event": null,
+    "eventId": null,
+    "history": [
+      {
+        "action": "Returned",
+        "eventId": "EVT-1790493689090",
+        "eventName": "testing 1",
+        "date": "2026-09-27T08:45:01.947Z",
+        "note": ""
+      }
+    ]
   },
   {
     "serial": "123",
     "name": "POS Terminal",
     "category": "Payment Device",
     "status": "In Office",
-    "event": null
+    "event": null,
+    "history": []
   },
   {
     "serial": "456",
     "name": "POS Terminal",
     "category": "Payment Device",
     "status": "In Office",
-    "event": null
+    "event": null,
+    "history": []
   },
   {
     "serial": "2163",
     "name": "POS Terminal",
     "category": "Payment Device",
     "status": "In Office",
-    "event": null
+    "event": null,
+    "history": []
   },
   {
     "serial": "2323",
     "name": "POS Terminal",
     "category": "Payment Device",
     "status": "In Office",
-    "event": null
+    "event": null,
+    "history": []
   },
   {
     "serial": "223",
     "name": "POS Terminal",
     "category": "Payment Device",
     "status": "In Office",
-    "event": null
+    "event": null,
+    "history": []
   },
   {
     "serial": "232",
     "name": "POS Terminal",
     "category": "Payment Device",
     "status": "In Office",
-    "event": null
+    "event": null,
+    "history": []
   },
   {
     "serial": "3",
     "name": "POS Terminal",
     "category": "Payment Device",
     "status": "In Office",
-    "event": null
+    "event": null,
+    "history": []
   },
   {
     "serial": "23",
     "name": "POS Terminal",
     "category": "Payment Device",
     "status": "In Office",
-    "event": null
+    "event": null,
+    "history": []
   },
   {
     "serial": "323",
     "name": "POS Terminal",
     "category": "Payment Device",
     "status": "In Office",
-    "event": null
+    "event": null,
+    "history": []
   },
   {
     "serial": "30",
     "name": "POS Terminal",
     "category": "Payment Device",
     "status": "In Office",
-    "event": null
+    "event": null,
+    "history": []
   }
 ]
