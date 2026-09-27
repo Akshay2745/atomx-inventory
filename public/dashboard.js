@@ -104,7 +104,7 @@ function getEventLink(event) {
 
 // ============ Greeting ============
 
-function showGreeting() {
+async function showGreeting() {
   const hour = new Date().getHours();
   let greeting = "Good evening";
 
@@ -114,10 +114,22 @@ function showGreeting() {
     greeting = "Good afternoon";
   }
 
-  const name = window.currentUser ? window.currentUser.name.toUpperCase() : "";
-  document.getElementById("greeting").textContent = `${greeting}, ${name} 👋`;
-}
+  let name = "there";
+  try {
+    const response = await fetch("/api/me");
+    if (response.ok) {
+      const user = await response.json();
+      name = user.name;
+    }
+  } catch (error) {
+    console.warn("Could not load the signed-in user", error);
+  }
 
+  document.getElementById("greeting").textContent = `${greeting}, ${name} 👋`;
+
+  const today = new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
+  document.getElementById("today-text").textContent = `Here's what's happening across your inventory today, ${today}.`;
+}
 
 // ============ Stat cards ============
 

@@ -1,8 +1,3 @@
-// ============ Signed-in user (placeholder until we build login) ============
-
-window.currentUser = { name: "Akshay", role: "Inventory Manager" };
-
-
 // ============ Build the sidebar and top bar on every page ============
 
 (function () {
@@ -15,8 +10,11 @@ window.currentUser = { name: "Akshay", role: "Inventory Manager" };
     "type-detail.html":   { key: "inventory",    title: "Track Devices" },
     "device-detail.html": { key: "inventory",    title: "Device" },
     "events.html":        { key: "events",       title: "Events" },
-    "event-detail.html":  { key: "events",       title: "Event Details" }
+    "event-detail.html":  { key: "events",       title: "Event Details" },
+    "users.html":         { key: "users",        title: "Users" }
   };
+
+  const ROLE_LABELS = { admin: "Admin", manager: "Inventory Manager" };
 
   const fileName = window.location.pathname.split("/").pop() || "dashboard.html";
   const pageInfo = PAGE_INFO[fileName] || { key: "", title: "" };
@@ -31,6 +29,7 @@ window.currentUser = { name: "Akshay", role: "Inventory Manager" };
     events: `${svgStart}<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
     create: `${svgStart}<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`,
     share: `${svgStart}<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`,
+    users: `${svgStart}<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
     logout: `${svgStart}<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
     menu: `${svgStart}<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
     bell: `${svgStart}<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`,
@@ -48,9 +47,6 @@ window.currentUser = { name: "Akshay", role: "Inventory Manager" };
 
     const oldNavbar = document.querySelector(".navbar");
     if (oldNavbar) oldNavbar.remove();
-
-    const user = window.currentUser;
-    const initial = user.name.charAt(0).toUpperCase();
 
     const shell = document.createElement("div");
     shell.className = "app-shell";
@@ -80,7 +76,8 @@ window.currentUser = { name: "Akshay", role: "Inventory Manager" };
         </nav>
 
         <div class="sidebar-footer">
-          ${navItem("logout", "index.html", ICONS.logout, "Logout")}
+          ${navItem("users", "users.html", ICONS.users, "Users")}
+          ${navItem("logout", "#", ICONS.logout, "Logout", 'id="logout-link"')}
         </div>
 
         <button type="button" class="collapse-btn" id="collapse-btn" aria-label="Collapse sidebar">${ICONS.collapse}</button>
@@ -99,13 +96,13 @@ window.currentUser = { name: "Akshay", role: "Inventory Manager" };
               ${ICONS.bell}
               <span class="bell-badge hidden" id="bell-badge">0</span>
             </a>
-            <div class="user-chip">
-              <span class="user-avatar">${initial}</span>
+            <a href="users.html" class="user-chip" style="text-decoration: none; color: inherit;">
+              <span class="user-avatar" id="user-avatar">…</span>
               <div class="user-text">
-                <strong>${user.name.toUpperCase()}</strong>
-                <small>${user.role}</small>
+                <strong id="user-name">Loading...</strong>
+                <small id="user-role"></small>
               </div>
-            </div>
+            </a>
           </div>
         </header>
       </div>
@@ -141,7 +138,40 @@ window.currentUser = { name: "Akshay", role: "Inventory Manager" };
       shell.classList.remove("sidebar-open");
     });
 
+    // Sign out
+    document.getElementById("logout-link").addEventListener("click", async function (event) {
+      event.preventDefault();
+      try {
+        await fetch("/api/logout", { method: "POST" });
+      } catch (error) {
+        console.warn("Could not reach the server while signing out", error);
+      }
+      window.location.href = "/index.html";
+    });
+
+    loadCurrentUser();
     loadBellCount();
+  }
+
+  async function loadCurrentUser() {
+    try {
+      const response = await fetch("/api/me");
+
+      if (response.status === 401) {
+        window.location.href = `/index.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+        return;
+      }
+      if (!response.ok) return;
+
+      const user = await response.json();
+      window.currentUser = user;
+
+      document.getElementById("user-avatar").textContent = user.name.charAt(0).toUpperCase();
+      document.getElementById("user-name").textContent = user.name.toUpperCase();
+      document.getElementById("user-role").textContent = ROLE_LABELS[user.role] || user.role;
+    } catch (error) {
+      console.warn("Could not load the signed-in user", error);
+    }
   }
 
   async function loadBellCount() {

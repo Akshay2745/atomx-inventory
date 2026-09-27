@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InventoryX - Users</title>
+  <link rel="stylesheet" href="inventory.css">
+</head>
+<body>
+
+  <main class="container">
+
+    <div class="page-header">
+      <div>
+        <h2>Users</h2>
+        <p class="page-subtitle">Change your password and manage who can use InventoryX.</p>
+      </div>
+    </div>
+
+    <div class="card add-form">
+      <h3 class="section-title">Change my password</h3>
+      <form id="password-form">
+        <div class="add-form-grid">
+          <div>
+            <label for="current-password">Current password</label>
+            <input type="password" id="current-password" autocomplete="current-password" required>
+          </div>
+          <div>
+            <label for="new-password">New password</label>
+            <input type="password" id="new-password" minlength="8" autocomplete="new-password" required>
+          </div>
+          <div>
+            <label for="confirm-password">Confirm new password</label>
+            <input type="password" id="confirm-password" minlength="8" autocomplete="new-password" required>
+          </div>
+        </div>
+        <p class="form-error" id="password-error"></p>
+        <p class="form-success" id="password-success"></p>
+        <div class="form-actions">
+          <button type="submit" class="btn-add" id="password-btn">Update password</button>
+        </div>
+      </form>
+    </div>
+
+    <p class="info-box hidden" id="manager-note">Only admins can add or manage team members.</p>
+
+    <div id="admin-section" class="hidden">
+      <div class="card add-form">
+        <h3 class="section-title">Add a team member</h3>
+        <form id="add-user-form">
+          <div class="add-form-grid">
+            <div>
+              <label for="user-name">Name</label>
+              <input type="text" id="user-name" maxlength="60" required>
+            </div>
+            <div>
+              <label for="user-email">Email</label>
+              <input type="email" id="user-email" placeholder="name@company.com" required>
+            </div>
+            <div>
+              <label for="user-role">Role</label>
+              <select id="user-role" required>
+                <option value="manager">Inventory Manager</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div>
+              <label for="user-password">Temporary password</label>
+              <input type="text" id="user-password" minlength="8" autocomplete="off" required>
+            </div>
+          </div>
+          <p class="form-hint">Share the temporary password with them privately. They can change it on this page after signing in.</p>
+          <p class="form-error" id="user-error"></p>
+          <p class="form-success" id="user-success"></p>
+          <div class="form-actions">
+            <button type="submit" class="btn-add" id="add-user-btn">Add team member</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body">
+            <tr><td colspan="5">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="users.js"></script>
+  <script src="layout.js"></script>
+
+</body>
+</html>

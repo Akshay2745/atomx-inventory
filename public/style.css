@@ -66,3 +66,27 @@ button {
 button:hover {
   background-color: #2a5298;
 }
+
+
+/* ---------- Login and setup ---------- */
+
+.hidden {
+  display: none;
+}
+
+.login-error {
+  min-height: 18px;
+  margin-bottom: 12px;
+  color: #b42323;
+  font-size: 14px;
+}
+
+.login-note {
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background-color: #e6eefb;
+  color: #1a4fa0;
+  font-size: 14px;
+  line-height: 1.5;
+}

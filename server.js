@@ -3,6 +3,7 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const auth = require("./auth");
 
 
 // ============ Create the server ============
@@ -19,7 +20,9 @@ const MAX_DEVICES_AT_ONCE = 500;
 const MAX_IMPORT_ROWS = 1000;
 
 app.use(express.json({ limit: "2mb" }));
+app.use(auth.requireLogin);
 app.use(express.static(path.join(__dirname, "public")));
+auth.registerAuthRoutes(app);
 
 
 // ============ Helpers: read and save data files ============
@@ -739,10 +742,10 @@ app.post("/api/events", function (req, res) {
   const location = String(body.location || "").trim();
   const requesterName = String(body.requesterName || "").trim();
   const requesterEmail = String(body.requesterEmail || "").trim();
-  const requesterPhone = String(body.requesterPhone || "").trim();
+   const requesterPhone = String(body.requesterPhone || "").trim();
   const ccEmails = String(body.ccEmails || "").trim();
   const notes = String(body.notes || "").trim();
-  const source = body.source === "manager" ? "Created by inventory manager" : "Staff request";
+  const source = req.user && body.source === "manager" ? "Created by inventory manager" : "Staff request";
 
   if (name === "" || location === "" || requesterName === "" || requesterEmail === "") {
     return res.status(400).json({ error: "Please fill in all required fields." });
@@ -812,6 +815,7 @@ app.post("/api/events", function (req, res) {
       items: itemTexts.join(", "),
       notes: notes,
       source: source,
+      createdBy: req.user ? req.user.name : null,
       status: "Requested",
       missing: 0,
       assignments: [],
