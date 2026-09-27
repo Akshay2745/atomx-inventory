@@ -1,11 +1,8 @@
-// ============ Login, sessions and user accounts ============
+// ============ Login, sessions and user accounts (stored in PostgreSQL) ============
 
-const fs = require("fs");
-const path = require("path");
 const crypto = require("crypto");
+const db = require("./db");
 
-const USERS_FILE = path.join(__dirname, "data", "users.json");
-const SESSIONS_FILE = path.join(__dirname, "data", "sessions.json");
 const COOKIE_NAME = "ix_session";
 const SESSION_DAYS = 7;
 const MAX_FAILED_ATTEMPTS = 5;
@@ -31,20 +28,6 @@ const PUBLIC_API = [
 ];
 
 const failedLogins = {};
-
-
-// ============ File helpers ============
-
-function readList(filePath) {
-  if (!fs.existsSync(filePath)) {
-    return [];
-  }
-  return JSON.parse(fs.readFileSync(filePath, "utf-8"));
-}
-
-function saveList(filePath, list) {
-  fs.writeFileSync(filePath, JSON.stringify(list, null, 2));
-}
 
 
 // ============ Passwords ============
@@ -83,48 +66,35 @@ function hashToken(token) {
 
 // ============ Users ============
 
-function publicUser(user) {
+function publicUser(row) {
   return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    active: user.active !== false
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    role: row.role,
+    active: row.active
   };
 }
 
-function publicUserList(users) {
-  const list = [];
-  for (const user of users) {
-    list.push(publicUser(user));
+async function listUsers() {
+  const result = await db.query("SELECT id, name, email, role, active FROM users ORDER BY created_at");
+  const users = [];
+  for (const row of result.rows) {
+    users.push(publicUser(row));
   }
-  return list;
+  return users;
 }
 
-function findUserByEmail(users, email) {
-  const lowerEmail = String(email || "").trim().toLowerCase();
-  for (const user of users) {
-    if (user.email === lowerEmail) {
-      return user;
-    }
-  }
-  return null;
-}
-
-function findUserById(users, id) {
-  for (const user of users) {
-    if (user.id === id) {
-      return user;
-    }
-  }
-  return null;
+async function findUserById(id) {
+  const result = await db.query("SELECT * FROM users WHERE id = $1", [id]);
+  return result.rows[0] || null;
 }
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function readNewUser(body, users) {
+function readNewUser(body) {
   const name = String(body.name || "").trim().replace(/\s+/g, " ");
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "");
@@ -135,9 +105,6 @@ function readNewUser(body, users) {
   if (!isValidEmail(email)) {
     return { error: "Please enter a valid email address." };
   }
-  if (findUserByEmail(users, email)) {
-    return { error: "An account with this email already exists.", status: 409 };
-  }
 
   const passwordProblem = checkNewPassword(password);
   if (passwordProblem) {
@@ -145,16 +112,6 @@ function readNewUser(body, users) {
   }
 
   return { name: name, email: email, password: password };
-}
-
-function countActiveAdmins(users) {
-  let count = 0;
-  for (const user of users) {
-    if (user.role === "admin" && user.active !== false) {
-      count++;
-    }
-  }
-  return count;
 }
 
 
@@ -170,20 +127,15 @@ function parseCookies(header) {
   return cookies;
 }
 
-function createSession(req, res, user) {
+async function createSession(req, res, userId) {
   const token = crypto.randomBytes(32).toString("hex");
-  const now = Date.now();
   const lifetime = SESSION_DAYS * 24 * 60 * 60 * 1000;
 
-  const sessions = [];
-  for (const session of readList(SESSIONS_FILE)) {
-    if (session.expiresAt > now) {
-      sessions.push(session);
-    }
-  }
-
-  sessions.push({ tokenHash: hashToken(token), userId: user.id, createdAt: now, expiresAt: now + lifetime });
-  saveList(SESSIONS_FILE, sessions);
+  await db.query("DELETE FROM sessions WHERE expires_at < now()");
+  await db.query(
+    "INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, now() + ($3 || ' days')::interval)",
+    [hashToken(token), userId, String(SESSION_DAYS)]
+  );
 
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
@@ -194,58 +146,32 @@ function createSession(req, res, user) {
   });
 }
 
-function endSession(req, res) {
+async function endSession(req, res) {
   const token = parseCookies(req.headers.cookie)[COOKIE_NAME];
-
   if (token) {
-    const tokenHash = hashToken(token);
-    const remaining = [];
-    for (const session of readList(SESSIONS_FILE)) {
-      if (session.tokenHash !== tokenHash) {
-        remaining.push(session);
-      }
-    }
-    saveList(SESSIONS_FILE, remaining);
+    await db.query("DELETE FROM sessions WHERE token_hash = $1", [hashToken(token)]);
   }
-
   res.clearCookie(COOKIE_NAME, { path: "/" });
 }
 
-function endAllSessionsFor(userId) {
-  const remaining = [];
-  for (const session of readList(SESSIONS_FILE)) {
-    if (session.userId !== userId) {
-      remaining.push(session);
-    }
-  }
-  saveList(SESSIONS_FILE, remaining);
+async function endAllSessionsFor(userId) {
+  await db.query("DELETE FROM sessions WHERE user_id = $1", [userId]);
 }
 
-function getSignedInUser(req) {
+async function getSignedInUser(req) {
   const token = parseCookies(req.headers.cookie)[COOKIE_NAME];
   if (!token) {
     return null;
   }
 
-  const tokenHash = hashToken(token);
-  const now = Date.now();
-  let found = null;
+  const result = await db.query(`
+    SELECT u.id, u.name, u.email, u.role, u.active
+    FROM sessions s
+    JOIN users u ON u.id = s.user_id
+    WHERE s.token_hash = $1 AND s.expires_at > now() AND u.active
+  `, [hashToken(token)]);
 
-  for (const session of readList(SESSIONS_FILE)) {
-    if (session.tokenHash === tokenHash && session.expiresAt > now) {
-      found = session;
-    }
-  }
-
-  if (!found) {
-    return null;
-  }
-
-  const user = findUserById(readList(USERS_FILE), found.userId);
-  if (!user || user.active === false) {
-    return null;
-  }
-  return user;
+  return result.rows[0] || null;
 }
 
 
@@ -258,12 +184,12 @@ function isPublic(req) {
   return PUBLIC_FILES.includes(req.path);
 }
 
-function requireLogin(req, res, next) {
+async function requireLogin(req, res, next) {
   let user = null;
   try {
-    user = getSignedInUser(req);
+    user = await getSignedInUser(req);
   } catch (error) {
-    console.error("Could not check the session:", error);
+    console.error("Could not check the session:", error.message);
   }
 
   req.user = user ? publicUser(user) : null;
@@ -314,51 +240,54 @@ function clearFailures(email) {
 
 function registerAuthRoutes(app) {
 
-  app.get("/api/setup-status", function (req, res) {
+  app.get("/api/setup-status", async function (req, res) {
     try {
-      res.json({ needsSetup: readList(USERS_FILE).length === 0 });
+      const result = await db.query("SELECT count(*)::int AS count FROM users");
+      res.json({ needsSetup: result.rows[0].count === 0 });
     } catch (error) {
       console.error("Could not read users:", error);
       res.status(500).json({ error: "Could not check the setup status." });
     }
   });
 
-  app.post("/api/setup", function (req, res) {
-    try {
-      const users = readList(USERS_FILE);
+  app.post("/api/setup", async function (req, res) {
+    const details = readNewUser(req.body);
+    if (details.error) {
+      return res.status(400).json({ error: details.error });
+    }
 
-      if (users.length > 0) {
+    try {
+      const userId = "USR-" + Date.now();
+
+      const created = await db.transaction(async function (client) {
+        await client.query("LOCK TABLE users IN EXCLUSIVE MODE");
+        const countResult = await client.query("SELECT count(*)::int AS count FROM users");
+
+        if (countResult.rows[0].count > 0) {
+          return false;
+        }
+
+        await client.query(
+          "INSERT INTO users (id, name, email, role, active, password_hash) VALUES ($1, $2, $3, 'admin', true, $4)",
+          [userId, details.name, details.email, hashPassword(details.password)]
+        );
+        return true;
+      });
+
+      if (!created) {
         return res.status(409).json({ error: "Setup is already complete. Please sign in." });
       }
 
-      const details = readNewUser(req.body, users);
-      if (details.error) {
-        return res.status(details.status || 400).json({ error: details.error });
-      }
-
-      const user = {
-        id: "USR-" + Date.now(),
-        name: details.name,
-        email: details.email,
-        role: "admin",
-        active: true,
-        passwordHash: hashPassword(details.password),
-        createdAt: new Date().toISOString()
-      };
-
-      users.push(user);
-      saveList(USERS_FILE, users);
-      createSession(req, res, user);
-
-      console.log(`First admin account created for ${user.name}`);
-      res.status(201).json(publicUser(user));
+      await createSession(req, res, userId);
+      console.log(`First admin account created for ${details.name}`);
+      res.status(201).json(publicUser(await findUserById(userId)));
     } catch (error) {
       console.error("Could not complete setup:", error);
       res.status(500).json({ error: "Could not create the account. Please try again." });
     }
   });
 
-  app.post("/api/login", function (req, res) {
+  app.post("/api/login", async function (req, res) {
     const email = String(req.body.email || "").trim().toLowerCase();
     const password = String(req.body.password || "");
 
@@ -371,15 +300,16 @@ function registerAuthRoutes(app) {
     }
 
     try {
-      const user = findUserByEmail(readList(USERS_FILE), email);
+      const result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+      const user = result.rows[0];
 
-      if (!user || user.active === false || !checkPassword(password, user.passwordHash)) {
+      if (!user || !user.active || !checkPassword(password, user.password_hash)) {
         recordFailure(email);
         return res.status(401).json({ error: "Email or password is incorrect." });
       }
 
       clearFailures(email);
-      createSession(req, res, user);
+      await createSession(req, res, user.id);
 
       console.log(`${user.name} signed in`);
       res.json(publicUser(user));
@@ -389,9 +319,9 @@ function registerAuthRoutes(app) {
     }
   });
 
-  app.post("/api/logout", function (req, res) {
+  app.post("/api/logout", async function (req, res) {
     try {
-      endSession(req, res);
+      await endSession(req, res);
       res.json({ ok: true });
     } catch (error) {
       console.error("Could not sign out:", error);
@@ -403,15 +333,14 @@ function registerAuthRoutes(app) {
     res.json(req.user);
   });
 
-  app.post("/api/me/password", function (req, res) {
+  app.post("/api/me/password", async function (req, res) {
     const currentPassword = String(req.body.currentPassword || "");
     const newPassword = String(req.body.newPassword || "");
 
     try {
-      const users = readList(USERS_FILE);
-      const user = findUserById(users, req.user.id);
+      const user = await findUserById(req.user.id);
 
-      if (!user || !checkPassword(currentPassword, user.passwordHash)) {
+      if (!user || !checkPassword(currentPassword, user.password_hash)) {
         return res.status(400).json({ error: "Your current password is incorrect." });
       }
 
@@ -420,11 +349,9 @@ function registerAuthRoutes(app) {
         return res.status(400).json({ error: problem });
       }
 
-      user.passwordHash = hashPassword(newPassword);
-      saveList(USERS_FILE, users);
-
-      endAllSessionsFor(user.id);
-      createSession(req, res, user);
+      await db.query("UPDATE users SET password_hash = $1 WHERE id = $2", [hashPassword(newPassword), user.id]);
+      await endAllSessionsFor(user.id);
+      await createSession(req, res, user.id);
 
       console.log(`${user.name} changed their password`);
       res.json({ ok: true });
@@ -434,54 +361,48 @@ function registerAuthRoutes(app) {
     }
   });
 
-  app.get("/api/users", requireAdmin, function (req, res) {
+  app.get("/api/users", requireAdmin, async function (req, res) {
     try {
-      res.json(publicUserList(readList(USERS_FILE)));
+      res.json(await listUsers());
     } catch (error) {
       console.error("Could not read users:", error);
       res.status(500).json({ error: "Could not load the users." });
     }
   });
 
-  app.post("/api/users", requireAdmin, function (req, res) {
+  app.post("/api/users", requireAdmin, async function (req, res) {
+    const details = readNewUser(req.body);
+    if (details.error) {
+      return res.status(400).json({ error: details.error });
+    }
+
+    const role = String(req.body.role || "");
+    if (!ROLES.includes(role)) {
+      return res.status(400).json({ error: "Please choose a role." });
+    }
+
     try {
-      const users = readList(USERS_FILE);
-      const details = readNewUser(req.body, users);
-
-      if (details.error) {
-        return res.status(details.status || 400).json({ error: details.error });
-      }
-
-      const role = String(req.body.role || "");
-      if (!ROLES.includes(role)) {
-        return res.status(400).json({ error: "Please choose a role." });
-      }
-
-      users.push({
-        id: "USR-" + Date.now(),
-        name: details.name,
-        email: details.email,
-        role: role,
-        active: true,
-        passwordHash: hashPassword(details.password),
-        createdAt: new Date().toISOString()
-      });
-      saveList(USERS_FILE, users);
+      await db.query(
+        "INSERT INTO users (id, name, email, role, active, password_hash) VALUES ($1, $2, $3, $4, true, $5)",
+        ["USR-" + Date.now(), details.name, details.email, role, hashPassword(details.password)]
+      );
 
       console.log(`${req.user.name} added a new ${role}: ${details.name}`);
-      res.status(201).json(publicUserList(users));
+      res.status(201).json(await listUsers());
     } catch (error) {
+      if (error.code === "23505") {
+        return res.status(409).json({ error: "An account with this email already exists." });
+      }
       console.error("Could not add user:", error);
       res.status(500).json({ error: "Could not add the user. Please try again." });
     }
   });
 
-  app.post("/api/users/:id/active", requireAdmin, function (req, res) {
+  app.post("/api/users/:id/active", requireAdmin, async function (req, res) {
     const makeActive = req.body.active === true;
 
     try {
-      const users = readList(USERS_FILE);
-      const user = findUserById(users, req.params.id);
+      const user = await findUserById(req.params.id);
 
       if (!user) {
         return res.status(404).json({ error: "User not found." });
@@ -489,31 +410,32 @@ function registerAuthRoutes(app) {
       if (!makeActive && user.id === req.user.id) {
         return res.status(400).json({ error: "You can't deactivate your own account." });
       }
-      if (!makeActive && user.role === "admin" && countActiveAdmins(users) <= 1) {
-        return res.status(400).json({ error: "There must always be at least one active admin." });
+
+      if (!makeActive && user.role === "admin") {
+        const adminResult = await db.query("SELECT count(*)::int AS count FROM users WHERE role = 'admin' AND active");
+        if (adminResult.rows[0].count <= 1) {
+          return res.status(400).json({ error: "There must always be at least one active admin." });
+        }
       }
 
-      user.active = makeActive;
-      saveList(USERS_FILE, users);
-
+      await db.query("UPDATE users SET active = $1 WHERE id = $2", [makeActive, user.id]);
       if (!makeActive) {
-        endAllSessionsFor(user.id);
+        await endAllSessionsFor(user.id);
       }
 
       console.log(`${req.user.name} ${makeActive ? "activated" : "deactivated"} ${user.name}`);
-      res.json(publicUserList(users));
+      res.json(await listUsers());
     } catch (error) {
       console.error("Could not update user:", error);
       res.status(500).json({ error: "Could not update the user. Please try again." });
     }
   });
 
-  app.post("/api/users/:id/password", requireAdmin, function (req, res) {
+  app.post("/api/users/:id/password", requireAdmin, async function (req, res) {
     const newPassword = String(req.body.password || "");
 
     try {
-      const users = readList(USERS_FILE);
-      const user = findUserById(users, req.params.id);
+      const user = await findUserById(req.params.id);
 
       if (!user) {
         return res.status(404).json({ error: "User not found." });
@@ -524,9 +446,8 @@ function registerAuthRoutes(app) {
         return res.status(400).json({ error: problem });
       }
 
-      user.passwordHash = hashPassword(newPassword);
-      saveList(USERS_FILE, users);
-      endAllSessionsFor(user.id);
+      await db.query("UPDATE users SET password_hash = $1 WHERE id = $2", [hashPassword(newPassword), user.id]);
+      await endAllSessionsFor(user.id);
 
       console.log(`${req.user.name} reset the password for ${user.name}`);
       res.json({ ok: true });
@@ -538,12 +459,11 @@ function registerAuthRoutes(app) {
 }
 
 
-function getNotificationEmails() {
+async function getNotificationEmails() {
+  const result = await db.query("SELECT email FROM users WHERE active ORDER BY created_at");
   const emails = [];
-  for (const user of readList(USERS_FILE)) {
-    if (user.active !== false) {
-      emails.push(user.email);
-    }
+  for (const row of result.rows) {
+    emails.push(row.email);
   }
   return emails;
 }

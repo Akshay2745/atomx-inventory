@@ -1,8 +1,8 @@
 // ============ Load the tools we need ============
 
 const express = require("express");
-const fs = require("fs");
 const path = require("path");
+const db = require("./db");
 const auth = require("./auth");
 const mailer = require("./mailer");
 
@@ -10,10 +10,7 @@ const mailer = require("./mailer");
 // ============ Create the server ============
 
 const app = express();
-const PORT = 3000;
-const DEVICES_FILE = path.join(__dirname, "data", "devices.json");
-const EVENTS_FILE = path.join(__dirname, "data", "events.json");
-const SETTINGS_FILE = path.join(__dirname, "data", "settings.json");
+const PORT = Number(process.env.PORT || 3000);
 
 const QUANTITY_ITEMS = ["Charger", "Paper Roll"];
 const RETURN_STATUSES = ["Returned", "Damaged", "Lost"];
@@ -26,130 +23,65 @@ app.use(express.static(path.join(__dirname, "public")));
 auth.registerAuthRoutes(app);
 
 
-// ============ Helpers: read and save data files ============
-
-function readJsonFile(filePath) {
-  const text = fs.readFileSync(filePath, "utf-8");
-  return JSON.parse(text);
-}
-
-function saveJsonFile(filePath, data) {
-  const text = JSON.stringify(data, null, 2);
-  fs.writeFileSync(filePath, text);
-}
-
-function nowText() {
-  return new Date().toISOString();
-}
+// ============ General helpers ============
 
 function cleanName(value) {
   return String(value || "").trim().replace(/\s+/g, " ");
 }
 
-
-// ============ Helpers: settings (categories and device types) ============
-
-function readSettings() {
-  if (!fs.existsSync(SETTINGS_FILE)) {
-    saveJsonFile(SETTINGS_FILE, { categories: [], types: [] });
-    console.log("Created an empty settings file");
-  }
-
-  const settings = readJsonFile(SETTINGS_FILE);
-  let changed = false;
-
-  if (!Array.isArray(settings.categories)) {
-    settings.categories = [];
-    changed = true;
-  }
-
-  if (!Array.isArray(settings.types)) {
-    settings.types = [];
-    const oldNames = Array.isArray(settings.deviceTypes) ? settings.deviceTypes : [];
-    for (const name of oldNames) {
-      settings.types.push({ name: name, category: "" });
-    }
-    changed = true;
-  }
-
-  if (settings.deviceTypes !== undefined) {
-    delete settings.deviceTypes;
-    changed = true;
-  }
-
-  if (changed) {
-    saveJsonFile(SETTINGS_FILE, settings);
-  }
-
-  return settings;
+function toIso(value) {
+  return value ? new Date(value).toISOString() : null;
 }
 
-function settingsResponse(settings) {
-  const typeNames = [];
-  for (const type of settings.types) {
-    typeNames.push(type.name);
-  }
-
-  return {
-    categories: settings.categories,
-    types: settings.types,
-    deviceTypes: typeNames,
-    quantityItems: QUANTITY_ITEMS
-  };
+function userName(req) {
+  return req.user ? req.user.name : null;
 }
 
-function getAllowedItems(settings) {
-  return settingsResponse(settings).deviceTypes.concat(QUANTITY_ITEMS);
+function newEventId() {
+  return `EVT-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 }
 
-function findMatch(list, value) {
-  const lowerValue = String(value || "").toLowerCase();
-  for (const item of list) {
-    if (item.toLowerCase() === lowerValue) {
-      return item;
-    }
-  }
-  return null;
+function isUniqueViolation(error) {
+  return error && error.code === "23505";
 }
 
-function findType(settings, name) {
-  const lowerName = String(name || "").toLowerCase();
-  for (const type of settings.types) {
-    if (type.name.toLowerCase() === lowerName) {
-      return type;
-    }
+function isStillInUse(error) {
+  return error && error.code === "23503";
+}
+
+function userError(status, message) {
+  const error = new Error(message);
+  error.status = status;
+  error.userMessage = message;
+  return error;
+}
+
+function handleError(res, error, message) {
+  if (error && error.userMessage) {
+    return res.status(error.status).json({ error: error.userMessage });
   }
-  return null;
+  console.error(message, error);
+  res.status(500).json({ error: `${message} Please try again.` });
 }
 
 
-// ============ Helpers: devices ============
+// ============ Helpers: dates and serial numbers ============
 
-function buildDevice(rawSerial, rawType, settings) {
-  const serial = String(rawSerial || "").trim().toUpperCase();
-  const typedName = String(rawType || "").trim();
-  const type = findType(settings, typedName);
+function isValidDate(text) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(text) && !isNaN(new Date(text).getTime());
+}
 
-  if (serial === "") {
-    return { error: "Serial number is missing." };
-  }
-  if (serial.length > 40) {
-    return { error: `Serial number ${serial} is too long (maximum 40 characters).` };
-  }
-  if (!type) {
-    return { error: `"${typedName}" is not a device type. Create it on the Device Types page first.` };
-  }
+function formatDate(text) {
+  const date = new Date(text + "T00:00:00Z");
+  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
 
-  return {
-    device: {
-      serial: serial,
-      name: type.name,
-      category: type.category || "Uncategorized",
-      status: "In Office",
-      event: null,
-      history: []
-    }
-  };
+function formatDateRange(startDate, endDate) {
+  if (!startDate) return "";
+  if (!endDate || startDate === endDate) {
+    return formatDate(startDate);
+  }
+  return `${formatDate(startDate)} – ${formatDate(endDate)}`;
 }
 
 function generateSerials(startSerial, quantity) {
@@ -170,237 +102,210 @@ function generateSerials(startSerial, quantity) {
   return serials;
 }
 
-function getExistingSerials(devices) {
-  const existing = new Set();
-  for (const device of devices) {
-    existing.add(device.serial);
+
+// ============ Reading settings (categories and device types) ============
+
+async function getSettings(runner) {
+  const source = runner || db;
+
+  const categoryResult = await source.query("SELECT name FROM categories ORDER BY created_at, id");
+  const typeResult = await source.query(`
+    SELECT t.name, c.name AS category
+    FROM device_types t
+    JOIN categories c ON c.id = t.category_id
+    ORDER BY t.created_at, t.id
+  `);
+
+  const categories = [];
+  for (const row of categoryResult.rows) {
+    categories.push(row.name);
   }
-  return existing;
+
+  const types = [];
+  const deviceTypes = [];
+  for (const row of typeResult.rows) {
+    types.push({ name: row.name, category: row.category });
+    deviceTypes.push(row.name);
+  }
+
+  return {
+    categories: categories,
+    types: types,
+    deviceTypes: deviceTypes,
+    quantityItems: QUANTITY_ITEMS
+  };
 }
 
-function makeDeviceLookup(devices) {
-  const lookup = {};
-  for (const device of devices) {
-    lookup[device.serial] = device;
-  }
-  return lookup;
-}
+async function findType(runner, name) {
+  const result = await runner.query(`
+    SELECT t.id, t.name, c.name AS category
+    FROM device_types t
+    JOIN categories c ON c.id = t.category_id
+    WHERE lower(t.name) = lower($1)
+  `, [String(name || "").trim()]);
 
-function addHistory(device, action, event, note) {
-  if (!Array.isArray(device.history)) {
-    device.history = [];
-  }
-  device.history.push({
-    action: action,
-    eventId: event ? event.id : null,
-    eventName: event ? event.name : null,
-    date: nowText(),
-    note: note || ""
-  });
+  return result.rows[0] || null;
 }
 
 
-// ============ Helpers: events ============
+// ============ Reading devices ============
 
-function parseItemsText(text) {
-  const list = [];
-  const parts = String(text || "").split(",");
+const DEVICE_SELECT = `
+  SELECT d.serial, t.name AS type_name, c.name AS category, d.status,
+         d.current_event_id, e.name AS event_name
+  FROM devices d
+  JOIN device_types t ON t.id = d.type_id
+  JOIN categories c ON c.id = t.category_id
+  LEFT JOIN events e ON e.id = d.current_event_id
+`;
 
-  for (const part of parts) {
-    const trimmed = part.trim();
-    const spaceIndex = trimmed.indexOf(" ");
-    if (spaceIndex === -1) continue;
+function mapDevice(row) {
+  return {
+    serial: row.serial,
+    name: row.type_name,
+    category: row.category,
+    status: row.status,
+    event: row.event_name || null,
+    eventId: row.current_event_id || null
+  };
+}
 
-    const qty = Number(trimmed.slice(0, spaceIndex));
-    const name = trimmed.slice(spaceIndex + 1);
 
-    if (Number.isInteger(qty) && qty > 0) {
-      list.push({ name: name, qty: qty });
+// ============ Reading events (with their items, assignments and emails) ============
+
+async function loadEvents(runner, eventId) {
+  const where = eventId ? "WHERE e.id = $1" : "";
+  const params = eventId ? [eventId] : [];
+
+  const eventResult = await runner.query(`
+    SELECT e.*,
+           to_char(e.start_date, 'YYYY-MM-DD') AS start_text,
+           to_char(e.end_date, 'YYYY-MM-DD') AS end_text
+    FROM events e
+    ${where}
+    ORDER BY e.created_at
+  `, params);
+
+  if (eventResult.rows.length === 0) {
+    return [];
+  }
+
+  const ids = [];
+  const byId = {};
+  const events = [];
+
+  for (const row of eventResult.rows) {
+    const event = {
+      id: row.id,
+      name: row.name,
+      startDate: row.start_text,
+      endDate: row.end_text,
+      dates: formatDateRange(row.start_text, row.end_text),
+      location: row.location,
+      requestedBy: row.requested_by,
+      requesterEmail: row.requester_email,
+      requesterPhone: row.requester_phone,
+      ccEmails: row.cc_emails,
+      notes: row.notes,
+      source: row.source,
+      createdBy: row.created_by,
+      status: row.status,
+      createdAt: toIso(row.created_at),
+      assignedAt: toIso(row.assigned_at),
+      dispatchedAt: toIso(row.dispatched_at),
+      closedAt: toIso(row.closed_at),
+      itemsList: [],
+      items: "",
+      assignments: [],
+      emails: [],
+      missing: 0
+    };
+
+    ids.push(row.id);
+    byId[row.id] = event;
+    events.push(event);
+  }
+
+  const itemResult = await runner.query(
+    "SELECT event_id, item_name, qty FROM event_items WHERE event_id = ANY($1) ORDER BY item_name",
+    [ids]
+  );
+
+  const assignmentResult = await runner.query(`
+    SELECT a.event_id, a.serial, t.name AS type_name, a.assigned_at, a.return_status, a.returned_at, a.note
+    FROM assignments a
+    JOIN devices d ON d.serial = a.serial
+    JOIN device_types t ON t.id = d.type_id
+    WHERE a.event_id = ANY($1)
+    ORDER BY a.id
+  `, [ids]);
+
+  const emailResult = await runner.query(
+    "SELECT event_id, type, to_address, cc, devices, sent_by, sent_at FROM email_log WHERE event_id = ANY($1) ORDER BY id",
+    [ids]
+  );
+
+  for (const row of itemResult.rows) {
+    byId[row.event_id].itemsList.push({ name: row.item_name, qty: row.qty });
+  }
+
+  for (const row of assignmentResult.rows) {
+    const event = byId[row.event_id];
+    event.assignments.push({
+      serial: row.serial,
+      name: row.type_name,
+      assignedAt: toIso(row.assigned_at),
+      returnStatus: row.return_status,
+      returnedAt: toIso(row.returned_at),
+      note: row.note
+    });
+    if (row.return_status === "Lost") {
+      event.missing++;
     }
   }
-  return list;
-}
 
-function readEvents() {
-  const events = readJsonFile(EVENTS_FILE);
-  let changed = false;
-  let counter = 0;
+  for (const row of emailResult.rows) {
+    byId[row.event_id].emails.push({
+      type: row.type,
+      to: row.to_address,
+      cc: row.cc,
+      devices: row.devices,
+      sentAt: toIso(row.sent_at),
+      by: row.sent_by
+    });
+  }
 
   for (const event of events) {
-    if (!event.id) {
-      counter++;
-      event.id = `EVT-${Date.now()}-${counter}`;
-      changed = true;
+    const texts = [];
+    for (const item of event.itemsList) {
+      texts.push(`${item.qty} ${item.name}`);
     }
-    if (!Array.isArray(event.itemsList)) {
-      event.itemsList = parseItemsText(event.items);
-      changed = true;
-    }
-    if (!Array.isArray(event.assignments)) {
-      event.assignments = [];
-      const oldSerials = Array.isArray(event.assignedDevices) ? event.assignedDevices : [];
-      for (const serial of oldSerials) {
-        event.assignments.push({
-          serial: serial,
-          name: "",
-          assignedAt: event.assignedAt || null,
-          returnStatus: null,
-          returnedAt: null,
-          note: ""
-        });
-      }
-      delete event.assignedDevices;
-      changed = true;
-    }
-  }
-
-  if (changed) {
-    saveJsonFile(EVENTS_FILE, events);
-    console.log("Updated events to the latest format");
+    event.items = texts.join(", ");
   }
 
   return events;
 }
 
-function findEventById(events, id) {
-  for (const event of events) {
-    if (event.id === id) {
-      return event;
-    }
-  }
-  return null;
-}
-
-function findEventByName(events, name) {
-  for (const event of events) {
-    if (event.name === name) {
-      return event;
-    }
-  }
-  return null;
-}
-
-function findAssignment(event, serial) {
-  for (const assignment of event.assignments) {
-    if (assignment.serial === serial) {
-      return assignment;
-    }
-  }
-  return null;
-}
-
-function countReturnStatus(event, status) {
-  let count = 0;
-  for (const assignment of event.assignments) {
-    if (assignment.returnStatus === status) {
-      count++;
-    }
-  }
-  return count;
-}
-
-
-// ============ Helpers: dates ============
-
-function isValidDate(text) {
-  return /^\d{4}-\d{2}-\d{2}$/.test(text) && !isNaN(new Date(text).getTime());
-}
-
-function formatDate(text) {
-  const date = new Date(text + "T00:00:00Z");
-  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
-}
-
-function formatDateRange(startDate, endDate) {
-  if (startDate === endDate) {
-    return formatDate(startDate);
-  }
-  return `${formatDate(startDate)} – ${formatDate(endDate)}`;
-}
-
-
-// ============ Update older saved data to the latest format ============
-
-function migrateData() {
-  try {
-    readSettings();
-    const events = readEvents();
-    const devices = readJsonFile(DEVICES_FILE);
-    const lookup = makeDeviceLookup(devices);
-    let changed = false;
-
-    for (const device of devices) {
-      if (device.status === "Missing") {
-        device.status = "Lost";
-        changed = true;
-      }
-      if (!Array.isArray(device.history)) {
-        device.history = [];
-        changed = true;
-      }
-
-      if (device.event && !device.eventId) {
-        const event = findEventByName(events, device.event);
-        if (event) {
-          device.eventId = event.id;
-          if (!findAssignment(event, device.serial)) {
-            const alreadyCheckedIn = device.status === "Lost" || device.status === "Damaged";
-            event.assignments.push({
-              serial: device.serial,
-              name: device.name,
-              assignedAt: event.assignedAt || null,
-              returnStatus: alreadyCheckedIn ? device.status : null,
-              returnedAt: null,
-              note: ""
-            });
-          }
-          changed = true;
-        }
-      }
-    }
-
-    for (const event of events) {
-      for (const assignment of event.assignments) {
-        if (!assignment.name) {
-          const device = lookup[assignment.serial];
-          assignment.name = device ? device.name : "Device";
-          changed = true;
-        }
-      }
-
-      const lostCount = countReturnStatus(event, "Lost");
-      if (event.assignments.length > 0 && event.missing !== lostCount) {
-        event.missing = lostCount;
-        changed = true;
-      }
-    }
-
-    if (changed) {
-      saveJsonFile(DEVICES_FILE, devices);
-      saveJsonFile(EVENTS_FILE, events);
-      console.log("Updated saved data to the latest format");
-    }
-  } catch (error) {
-    console.error("Could not update saved data:", error);
-  }
+async function loadEvent(runner, eventId) {
+  const events = await loadEvents(runner, eventId);
+  return events[0] || null;
 }
 
 
 // ============ API: settings ============
 
-app.get("/api/settings", function (req, res) {
+app.get("/api/settings", async function (req, res) {
   try {
-    res.json(settingsResponse(readSettings()));
+    res.json(await getSettings());
   } catch (error) {
-    console.error("Could not read settings:", error);
-    res.status(500).json({ error: "Could not load settings" });
+    handleError(res, error, "Could not load settings.");
   }
 });
 
 
 // ============ API: categories ============
 
-app.post("/api/settings/categories", function (req, res) {
+app.post("/api/settings/categories", async function (req, res) {
   const name = cleanName(req.body.name);
 
   if (name === "") {
@@ -411,64 +316,50 @@ app.post("/api/settings/categories", function (req, res) {
   }
 
   try {
-    const settings = readSettings();
-
-    if (findMatch(settings.categories, name)) {
+    await db.query("INSERT INTO categories (name) VALUES ($1)", [name]);
+    console.log(`Created category: ${name}`);
+    res.status(201).json(await getSettings());
+  } catch (error) {
+    if (isUniqueViolation(error)) {
       return res.status(409).json({ error: `The category "${name}" already exists.` });
     }
-
-    settings.categories.push(name);
-    saveJsonFile(SETTINGS_FILE, settings);
-
-    console.log(`Created category: ${name}`);
-    res.status(201).json(settingsResponse(settings));
-  } catch (error) {
-    console.error("Could not create category:", error);
-    res.status(500).json({ error: "Could not save the category. Please try again." });
+    handleError(res, error, "Could not save the category.");
   }
 });
 
-app.delete("/api/settings/categories/:name", function (req, res) {
+app.delete("/api/settings/categories/:name", async function (req, res) {
   try {
-    const settings = readSettings();
-    const category = findMatch(settings.categories, req.params.name);
+    const found = await db.query("SELECT id, name FROM categories WHERE lower(name) = lower($1)", [req.params.name]);
+    const category = found.rows[0];
 
     if (!category) {
       return res.status(404).json({ error: "Category not found." });
     }
 
-    const typesInCategory = [];
-    for (const type of settings.types) {
-      if (type.category === category) {
-        typesInCategory.push(type.name);
+    const typeResult = await db.query("SELECT name FROM device_types WHERE category_id = $1 ORDER BY name", [category.id]);
+    if (typeResult.rows.length > 0) {
+      const names = [];
+      for (const row of typeResult.rows) {
+        names.push(row.name);
       }
+      return res.status(409).json({ error: `"${category.name}" still has device types (${names.join(", ")}). Delete those types first.` });
     }
 
-    if (typesInCategory.length > 0) {
-      return res.status(409).json({ error: `"${category}" still has device types (${typesInCategory.join(", ")}). Delete those types first.` });
-    }
-
-    const remaining = [];
-    for (const item of settings.categories) {
-      if (item !== category) {
-        remaining.push(item);
-      }
-    }
-    settings.categories = remaining;
-    saveJsonFile(SETTINGS_FILE, settings);
-
-    console.log(`Deleted category: ${category}`);
-    res.json(settingsResponse(settings));
+    await db.query("DELETE FROM categories WHERE id = $1", [category.id]);
+    console.log(`Deleted category: ${category.name}`);
+    res.json(await getSettings());
   } catch (error) {
-    console.error("Could not delete category:", error);
-    res.status(500).json({ error: "Could not delete the category. Please try again." });
+    if (isStillInUse(error)) {
+      return res.status(409).json({ error: "This category is still in use, so it can't be deleted." });
+    }
+    handleError(res, error, "Could not delete the category.");
   }
 });
 
 
 // ============ API: device types ============
 
-app.post("/api/settings/types", function (req, res) {
+app.post("/api/settings/types", async function (req, res) {
   const name = cleanName(req.body.name);
   const typedCategory = cleanName(req.body.category);
 
@@ -481,162 +372,169 @@ app.post("/api/settings/types", function (req, res) {
   if (typedCategory === "") {
     return res.status(400).json({ error: "Please choose a category for this device type." });
   }
+  for (const item of QUANTITY_ITEMS) {
+    if (item.toLowerCase() === name.toLowerCase()) {
+      return res.status(409).json({ error: `"${name}" is already used as a quantity item.` });
+    }
+  }
 
   try {
-    const settings = readSettings();
-    const category = findMatch(settings.categories, typedCategory);
+    const found = await db.query("SELECT id, name FROM categories WHERE lower(name) = lower($1)", [typedCategory]);
+    const category = found.rows[0];
 
     if (!category) {
       return res.status(400).json({ error: `The category "${typedCategory}" does not exist. Create it on the Categories page first.` });
     }
-    if (findType(settings, name)) {
+
+    await db.query("INSERT INTO device_types (name, category_id) VALUES ($1, $2)", [name, category.id]);
+    console.log(`Created device type: ${name} (${category.name})`);
+    res.status(201).json(await getSettings());
+  } catch (error) {
+    if (isUniqueViolation(error)) {
       return res.status(409).json({ error: `The device type "${name}" already exists.` });
     }
-    if (findMatch(QUANTITY_ITEMS, name)) {
-      return res.status(409).json({ error: `"${name}" is already used as a quantity item.` });
-    }
-
-    settings.types.push({ name: name, category: category });
-    saveJsonFile(SETTINGS_FILE, settings);
-
-    console.log(`Created device type: ${name} (${category})`);
-    res.status(201).json(settingsResponse(settings));
-  } catch (error) {
-    console.error("Could not create device type:", error);
-    res.status(500).json({ error: "Could not save the device type. Please try again." });
+    handleError(res, error, "Could not save the device type.");
   }
 });
 
-app.delete("/api/settings/types/:name", function (req, res) {
+app.delete("/api/settings/types/:name", async function (req, res) {
   try {
-    const settings = readSettings();
-    const type = findType(settings, req.params.name);
+    const type = await findType(db, req.params.name);
 
     if (!type) {
       return res.status(404).json({ error: "Device type not found." });
     }
 
-    const devices = readJsonFile(DEVICES_FILE);
-    let deviceCount = 0;
-    for (const device of devices) {
-      if (device.name === type.name) {
-        deviceCount++;
-      }
-    }
+    const countResult = await db.query("SELECT count(*)::int AS count FROM devices WHERE type_id = $1", [type.id]);
+    const deviceCount = countResult.rows[0].count;
 
     if (deviceCount > 0) {
       return res.status(409).json({ error: `${deviceCount} device(s) use "${type.name}", so it can't be deleted.` });
     }
 
-    const remaining = [];
-    for (const item of settings.types) {
-      if (item !== type) {
-        remaining.push(item);
-      }
-    }
-    settings.types = remaining;
-    saveJsonFile(SETTINGS_FILE, settings);
-
+    await db.query("DELETE FROM device_types WHERE id = $1", [type.id]);
     console.log(`Deleted device type: ${type.name}`);
-    res.json(settingsResponse(settings));
+    res.json(await getSettings());
   } catch (error) {
-    console.error("Could not delete device type:", error);
-    res.status(500).json({ error: "Could not delete the device type. Please try again." });
+    if (isStillInUse(error)) {
+      return res.status(409).json({ error: "Devices use this type, so it can't be deleted." });
+    }
+    handleError(res, error, "Could not delete the device type.");
   }
 });
 
 
 // ============ API: devices ============
 
-app.get("/api/devices", function (req, res) {
+app.get("/api/devices", async function (req, res) {
   try {
-    res.json(readJsonFile(DEVICES_FILE));
+    const result = await db.query(`${DEVICE_SELECT} ORDER BY d.created_at, d.serial`);
+    const devices = [];
+    for (const row of result.rows) {
+      devices.push(mapDevice(row));
+    }
+    res.json(devices);
   } catch (error) {
-    console.error("Could not read devices:", error);
-    res.status(500).json({ error: "Could not load devices" });
+    handleError(res, error, "Could not load devices.");
   }
 });
 
-app.get("/api/devices/:serial", function (req, res) {
+app.get("/api/devices/:serial", async function (req, res) {
   try {
-    const devices = readJsonFile(DEVICES_FILE);
-    const lookup = makeDeviceLookup(devices);
-    const device = lookup[String(req.params.serial).toUpperCase()];
+    const serial = String(req.params.serial).trim().toUpperCase();
+    const result = await db.query(`${DEVICE_SELECT} WHERE d.serial = $1`, [serial]);
 
-    if (!device) {
+    if (!result.rows[0]) {
       return res.status(404).json({ error: "Device not found" });
+    }
+
+    const device = mapDevice(result.rows[0]);
+
+    const historyResult = await db.query(
+      "SELECT action, event_id, event_name, note, created_by, created_at FROM device_history WHERE serial = $1 ORDER BY created_at, id",
+      [serial]
+    );
+
+    device.history = [];
+    for (const row of historyResult.rows) {
+      device.history.push({
+        action: row.action,
+        eventId: row.event_id,
+        eventName: row.event_name,
+        note: row.note,
+        by: row.created_by,
+        date: toIso(row.created_at)
+      });
     }
 
     res.json(device);
   } catch (error) {
-    console.error("Could not read device:", error);
-    res.status(500).json({ error: "Could not load the device" });
+    handleError(res, error, "Could not load the device.");
   }
 });
 
-app.post("/api/devices", function (req, res) {
+app.post("/api/devices", async function (req, res) {
   const quantity = req.body.quantity === undefined ? 1 : Number(req.body.quantity);
+  const firstSerial = String(req.body.serial || "").trim().toUpperCase();
 
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_DEVICES_AT_ONCE) {
     return res.status(400).json({ error: `Quantity must be a whole number between 1 and ${MAX_DEVICES_AT_ONCE}.` });
   }
+  if (firstSerial === "") {
+    return res.status(400).json({ error: "Serial number is missing." });
+  }
+  if (firstSerial.length > 40) {
+    return res.status(400).json({ error: "The serial number is too long (maximum 40 characters)." });
+  }
+
+  let serials = [firstSerial];
+  if (quantity > 1) {
+    serials = generateSerials(firstSerial, quantity);
+    if (!serials) {
+      return res.status(400).json({ error: "To add more than one device, the serial number must end with a number, like POS-0010." });
+    }
+  }
 
   try {
-    const settings = readSettings();
-    const first = buildDevice(req.body.serial, req.body.name, settings);
-
-    if (first.error) {
-      return res.status(400).json({ error: first.error });
+    const type = await findType(db, req.body.name);
+    if (!type) {
+      return res.status(400).json({ error: `"${String(req.body.name || "").trim()}" is not a device type. Create it on the Device Types page first.` });
     }
 
-    let serials = [first.device.serial];
-    if (quantity > 1) {
-      serials = generateSerials(first.device.serial, quantity);
-      if (!serials) {
-        return res.status(400).json({ error: "To add more than one device, the serial number must end with a number, like POS-0010." });
+    await db.transaction(async function (client) {
+      const existing = await client.query("SELECT serial FROM devices WHERE serial = ANY($1) ORDER BY serial", [serials]);
+
+      if (existing.rows.length > 0) {
+        const duplicates = [];
+        for (const row of existing.rows) {
+          duplicates.push(row.serial);
+        }
+        const extra = duplicates.length > 5 ? ` and ${duplicates.length - 5} more` : "";
+        throw userError(409, `These serial numbers already exist: ${duplicates.slice(0, 5).join(", ")}${extra}.`);
       }
-    }
 
-    const devices = readJsonFile(DEVICES_FILE);
-    const existingSerials = getExistingSerials(devices);
-    const duplicates = [];
-
-    for (const serial of serials) {
-      if (existingSerials.has(serial)) {
-        duplicates.push(serial);
-      }
-    }
-
-    if (duplicates.length > 0) {
-      const extra = duplicates.length > 5 ? ` and ${duplicates.length - 5} more` : "";
-      return res.status(409).json({ error: `These serial numbers already exist: ${duplicates.slice(0, 5).join(", ")}${extra}.` });
-    }
+      await client.query(
+        "INSERT INTO devices (serial, type_id) SELECT unnest($1::text[]), $2",
+        [serials, type.id]
+      );
+    });
 
     const added = [];
     for (const serial of serials) {
-      const newDevice = {
-        serial: serial,
-        name: first.device.name,
-        category: first.device.category,
-        status: "In Office",
-        event: null,
-        history: []
-      };
-      devices.push(newDevice);
-      added.push(newDevice);
+      added.push({ serial: serial, name: type.name, category: type.category, status: "In Office", event: null, eventId: null });
     }
 
-    saveJsonFile(DEVICES_FILE, devices);
-
-    console.log(`Added ${added.length} ${first.device.name} device(s)`);
+    console.log(`Added ${added.length} ${type.name} device(s)`);
     res.status(201).json({ added: added });
   } catch (error) {
-    console.error("Could not save devices:", error);
-    res.status(500).json({ error: "Could not save the devices. Please try again." });
+    if (isUniqueViolation(error)) {
+      return res.status(409).json({ error: "Some of these serial numbers were just added by someone else. Please refresh and try again." });
+    }
+    handleError(res, error, "Could not save the devices.");
   }
 });
 
-app.post("/api/devices/bulk", function (req, res) {
+app.post("/api/devices/bulk", async function (req, res) {
   const rows = Array.isArray(req.body.devices) ? req.body.devices : [];
 
   if (rows.length === 0) {
@@ -647,36 +545,61 @@ app.post("/api/devices/bulk", function (req, res) {
   }
 
   try {
-    const settings = readSettings();
-    const devices = readJsonFile(DEVICES_FILE);
-    const existingSerials = getExistingSerials(devices);
-    const serialsInFile = new Set();
+    const typeResult = await db.query(`
+      SELECT t.id, t.name, c.name AS category
+      FROM device_types t
+      JOIN categories c ON c.id = t.category_id
+    `);
+
+    const typesByName = {};
+    for (const row of typeResult.rows) {
+      typesByName[row.name.toLowerCase()] = row;
+    }
+
     const errors = [];
     const toAdd = [];
+    const lineBySerial = {};
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const lineNumber = row.line || i + 2;
-      const result = buildDevice(row.serial, row.type, settings);
+      const serial = String(row.serial || "").trim().toUpperCase();
+      const typedName = String(row.type || "").trim();
+      const type = typesByName[typedName.toLowerCase()];
 
-      if (result.error) {
-        errors.push(`Row ${lineNumber}: ${result.error}`);
+      if (serial === "") {
+        errors.push(`Row ${lineNumber}: Serial number is missing.`);
         continue;
       }
-
-      const serial = result.device.serial;
-
-      if (existingSerials.has(serial)) {
-        errors.push(`Row ${lineNumber}: ${serial} already exists in the inventory.`);
+      if (serial.length > 40) {
+        errors.push(`Row ${lineNumber}: Serial number ${serial} is too long (maximum 40 characters).`);
         continue;
       }
-      if (serialsInFile.has(serial)) {
+      if (!type) {
+        errors.push(`Row ${lineNumber}: "${typedName}" is not a device type. Create it on the Device Types page first.`);
+        continue;
+      }
+      if (lineBySerial[serial]) {
         errors.push(`Row ${lineNumber}: ${serial} appears more than once in the file.`);
         continue;
       }
 
-      serialsInFile.add(serial);
-      toAdd.push(result.device);
+      lineBySerial[serial] = lineNumber;
+      toAdd.push({ serial: serial, type: type });
+    }
+
+    const serials = [];
+    const typeIds = [];
+    for (const item of toAdd) {
+      serials.push(item.serial);
+      typeIds.push(item.type.id);
+    }
+
+    if (serials.length > 0) {
+      const existing = await db.query("SELECT serial FROM devices WHERE serial = ANY($1)", [serials]);
+      for (const row of existing.rows) {
+        errors.push(`Row ${lineBySerial[row.serial]}: ${row.serial} already exists in the inventory.`);
+      }
     }
 
     if (errors.length > 0) {
@@ -686,34 +609,42 @@ app.post("/api/devices/bulk", function (req, res) {
       });
     }
 
-    for (const device of toAdd) {
-      devices.push(device);
-    }
-    saveJsonFile(DEVICES_FILE, devices);
+    await db.transaction(async function (client) {
+      await client.query(
+        "INSERT INTO devices (serial, type_id) SELECT * FROM unnest($1::text[], $2::int[])",
+        [serials, typeIds]
+      );
+    });
 
-    console.log(`Imported ${toAdd.length} devices from CSV`);
-    res.status(201).json({ added: toAdd });
+    const added = [];
+    for (const item of toAdd) {
+      added.push({ serial: item.serial, name: item.type.name, category: item.type.category, status: "In Office", event: null, eventId: null });
+    }
+
+    console.log(`Imported ${added.length} devices from CSV`);
+    res.status(201).json({ added: added });
   } catch (error) {
-    console.error("Could not import devices:", error);
-    res.status(500).json({ error: "Could not import the devices. Please try again." });
+    if (isUniqueViolation(error)) {
+      return res.status(409).json({ error: "Some serial numbers were just added by someone else. Please refresh and try again." });
+    }
+    handleError(res, error, "Could not import the devices.");
   }
 });
 
 
 // ============ API: events ============
 
-app.get("/api/events", function (req, res) {
+app.get("/api/events", async function (req, res) {
   try {
-    res.json(readEvents());
+    res.json(await loadEvents(db));
   } catch (error) {
-    console.error("Could not read events:", error);
-    res.status(500).json({ error: "Could not load events" });
+    handleError(res, error, "Could not load events.");
   }
 });
 
-app.get("/api/events/:id", function (req, res) {
+app.get("/api/events/:id", async function (req, res) {
   try {
-    const event = findEventById(readEvents(), req.params.id);
+    const event = await loadEvent(db, req.params.id);
 
     if (!event) {
       return res.status(404).json({ error: "Event not found" });
@@ -721,21 +652,12 @@ app.get("/api/events/:id", function (req, res) {
 
     res.json(event);
   } catch (error) {
-    console.error("Could not read event:", error);
-    res.status(500).json({ error: "Could not load the event" });
+    handleError(res, error, "Could not load the event.");
   }
 });
 
-app.post("/api/events", function (req, res) {
+app.post("/api/events", async function (req, res) {
   const body = req.body;
-
-  let allowedItems;
-  try {
-    allowedItems = getAllowedItems(readSettings());
-  } catch (error) {
-    console.error("Could not read settings:", error);
-    return res.status(500).json({ error: "Could not load settings. Please try again." });
-  }
 
   const name = String(body.eventName || "").trim();
   const startDate = String(body.startDate || "").trim();
@@ -743,7 +665,7 @@ app.post("/api/events", function (req, res) {
   const location = String(body.location || "").trim();
   const requesterName = String(body.requesterName || "").trim();
   const requesterEmail = String(body.requesterEmail || "").trim();
-   const requesterPhone = String(body.requesterPhone || "").trim();
+  const requesterPhone = String(body.requesterPhone || "").trim();
   const ccEmails = String(body.ccEmails || "").trim();
   const notes = String(body.notes || "").trim();
   const source = req.user && body.source === "manager" ? "Created by inventory manager" : "Staff request";
@@ -751,96 +673,87 @@ app.post("/api/events", function (req, res) {
   if (name === "" || location === "" || requesterName === "" || requesterEmail === "") {
     return res.status(400).json({ error: "Please fill in all required fields." });
   }
-
   if (!requesterEmail.includes("@")) {
     return res.status(400).json({ error: "Please enter a valid email address." });
   }
-
   if (!isValidDate(startDate) || !isValidDate(endDate)) {
     return res.status(400).json({ error: "Please enter valid start and end dates." });
   }
-
   if (endDate < startDate) {
     return res.status(400).json({ error: "The end date can't be before the start date." });
   }
 
   const items = Array.isArray(body.items) ? body.items : [];
-
   if (items.length === 0) {
     return res.status(400).json({ error: "Please add at least one item." });
   }
 
-  const cleanItems = [];
-  const seenNames = [];
-
-  for (const item of items) {
-    const itemName = String(item.name || "").trim();
-    const qty = Number(item.qty);
-
-    if (!allowedItems.includes(itemName)) {
-      return res.status(400).json({ error: `"${itemName}" is not a valid item.` });
-    }
-
-    if (!Number.isInteger(qty) || qty < 1) {
-      return res.status(400).json({ error: `Quantity for ${itemName} must be a whole number of at least 1.` });
-    }
-
-    if (seenNames.includes(itemName)) {
-      return res.status(400).json({ error: `${itemName} is listed twice. Please combine it into one row.` });
-    }
-
-    seenNames.push(itemName);
-    cleanItems.push({ name: itemName, qty: qty });
-  }
-
-  const itemTexts = [];
-  for (const item of cleanItems) {
-    itemTexts.push(`${item.qty} ${item.name}`);
-  }
-
   try {
-    const events = readEvents();
+    const settings = await getSettings();
+    const allowedItems = settings.deviceTypes.concat(QUANTITY_ITEMS);
 
-    const newEvent = {
-      id: "EVT-" + Date.now(),
-      name: name,
-      startDate: startDate,
-      endDate: endDate,
-      dates: formatDateRange(startDate, endDate),
-      location: location,
-      requestedBy: requesterName,
-      requesterEmail: requesterEmail,
-      requesterPhone: requesterPhone,
-      ccEmails: ccEmails,
-      itemsList: cleanItems,
-      items: itemTexts.join(", "),
-      notes: notes,
-      source: source,
-      createdBy: req.user ? req.user.name : null,
-      status: "Requested",
-      missing: 0,
-      assignments: [],
-      createdAt: nowText()
-    };
+    const cleanItems = [];
+    const seenNames = [];
 
-    events.push(newEvent);
-    saveJsonFile(EVENTS_FILE, events);
+    for (const item of items) {
+      const itemName = String(item.name || "").trim();
+      const qty = Number(item.qty);
 
-    console.log(`New event created: ${name} (${source})`);
-    if (source === "Staff request") {
-      mailer.sendNewRequestEmail(newEvent, auth.getNotificationEmails());
+      if (!allowedItems.includes(itemName)) {
+        return res.status(400).json({ error: `"${itemName}" is not a valid item.` });
+      }
+      if (!Number.isInteger(qty) || qty < 1) {
+        return res.status(400).json({ error: `Quantity for ${itemName} must be a whole number of at least 1.` });
+      }
+      if (seenNames.includes(itemName)) {
+        return res.status(400).json({ error: `${itemName} is listed twice. Please combine it into one row.` });
+      }
+
+      seenNames.push(itemName);
+      cleanItems.push({ name: itemName, qty: qty });
     }
+
+    const eventId = newEventId();
+
+    await db.transaction(async function (client) {
+      await client.query(`
+        INSERT INTO events (id, name, start_date, end_date, location, requested_by, requester_email,
+                            requester_phone, cc_emails, notes, source, created_by)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      `, [eventId, name, startDate, endDate, location, requesterName, requesterEmail,
+          requesterPhone, ccEmails, notes, source, userName(req)]);
+
+      for (const item of cleanItems) {
+        await client.query(
+          "INSERT INTO event_items (event_id, item_name, qty) VALUES ($1, $2, $3)",
+          [eventId, item.name, item.qty]
+        );
+      }
+    });
+
+    const newEvent = await loadEvent(db, eventId);
+    console.log(`New event created: ${name} (${source})`);
+
+    if (source === "Staff request") {
+      auth.getNotificationEmails()
+        .then(function (emails) {
+          return mailer.sendNewRequestEmail(newEvent, emails);
+        })
+        .catch(function (error) {
+          console.error("Could not send the new request alert:", error.message);
+        });
+    }
+
     res.status(201).json(newEvent);
   } catch (error) {
-    console.error("Could not save event:", error);
-    res.status(500).json({ error: "Could not save the event. Please try again." });
+    handleError(res, error, "Could not save the event.");
   }
 });
 
 
 // ============ API: assign devices to an event ============
 
-app.post("/api/events/:id/assign", function (req, res) {
+app.post("/api/events/:id/assign", async function (req, res) {
   const rawSerials = Array.isArray(req.body.serials) ? req.body.serials : [];
   const serials = [];
 
@@ -859,70 +772,78 @@ app.post("/api/events/:id/assign", function (req, res) {
   }
 
   try {
-    const events = readEvents();
-    const devices = readJsonFile(DEVICES_FILE);
-    const lookup = makeDeviceLookup(devices);
-    const event = findEventById(events, req.params.id);
+    let eventName = "";
 
-    if (!event) {
-      return res.status(404).json({ error: "Event not found" });
-    }
-    if (event.status === "Closed") {
-      return res.status(409).json({ error: "This event is closed. Devices can't be assigned to it anymore." });
-    }
+    await db.transaction(async function (client) {
+      const eventResult = await client.query("SELECT id, name, status FROM events WHERE id = $1 FOR UPDATE", [req.params.id]);
+      const event = eventResult.rows[0];
 
-    const toAssign = [];
-    for (const serial of serials) {
-      const device = lookup[serial];
-
-      if (!device) {
-        return res.status(400).json({ error: `Device ${serial} was not found in the inventory.` });
+      if (!event) {
+        throw userError(404, "Event not found");
       }
-      if (device.status !== "In Office") {
-        const where = device.event ? ` at ${device.event}` : "";
-        return res.status(409).json({ error: `${serial} is not available (currently ${device.status}${where}). Please refresh the page.` });
+      if (event.status === "Closed") {
+        throw userError(409, "This event is closed. Devices can't be assigned to it anymore.");
       }
-      toAssign.push(device);
-    }
+      eventName = event.name;
 
-    const time = nowText();
+      const deviceResult = await client.query(`
+        SELECT d.serial, d.status, e.name AS event_name
+        FROM devices d
+        LEFT JOIN events e ON e.id = d.current_event_id
+        WHERE d.serial = ANY($1)
+        FOR UPDATE OF d
+      `, [serials]);
 
-    for (const device of toAssign) {
-      device.status = "Assigned";
-      device.event = event.name;
-      device.eventId = event.id;
-      addHistory(device, "Assigned", event, "");
+      const bySerial = {};
+      for (const row of deviceResult.rows) {
+        bySerial[row.serial] = row;
+      }
 
-      event.assignments.push({
-        serial: device.serial,
-        name: device.name,
-        assignedAt: time,
-        returnStatus: null,
-        returnedAt: null,
-        note: ""
-      });
-    }
+      for (const serial of serials) {
+        const device = bySerial[serial];
+        if (!device) {
+          throw userError(400, `Device ${serial} was not found in the inventory.`);
+        }
+        if (device.status !== "In Office") {
+          const where = device.event_name ? ` at ${device.event_name}` : "";
+          throw userError(409, `${serial} is not available (currently ${device.status}${where}). Please refresh the page.`);
+        }
+      }
 
-    if (event.status === "Requested") {
-      event.status = "Assigned";
-      event.assignedAt = time;
-    }
+      await client.query(
+        "UPDATE devices SET status = 'Assigned', current_event_id = $1 WHERE serial = ANY($2)",
+        [event.id, serials]
+      );
 
-    saveJsonFile(DEVICES_FILE, devices);
-    saveJsonFile(EVENTS_FILE, events);
+      await client.query(`
+        INSERT INTO assignments (event_id, serial, assigned_at)
+        SELECT $1, unnest($2::text[]), now()
+        ON CONFLICT (event_id, serial)
+        DO UPDATE SET assigned_at = now(), return_status = NULL, returned_at = NULL, note = ''
+      `, [event.id, serials]);
 
-    console.log(`Assigned ${toAssign.length} device(s) to ${event.name}`);
-    res.json(event);
+      await client.query(`
+        INSERT INTO device_history (serial, action, event_id, event_name, created_by)
+        SELECT unnest($1::text[]), 'Assigned', $2, $3, $4
+      `, [serials, event.id, event.name, userName(req)]);
+
+      if (event.status === "Requested") {
+        await client.query("UPDATE events SET status = 'Assigned', assigned_at = now() WHERE id = $1", [event.id]);
+      }
+    });
+
+    const updatedEvent = await loadEvent(db, req.params.id);
+    console.log(`Assigned ${serials.length} device(s) to ${eventName}`);
+    res.json(updatedEvent);
   } catch (error) {
-    console.error("Could not assign devices:", error);
-    res.status(500).json({ error: "Could not save the assignment. Please try again." });
+    handleError(res, error, "Could not save the assignment.");
   }
 });
 
 
 // ============ API: check devices back in (returned, damaged or lost) ============
 
-app.post("/api/events/:id/return", function (req, res) {
+app.post("/api/events/:id/return", async function (req, res) {
   const rawReturns = Array.isArray(req.body.returns) ? req.body.returns : [];
   const returns = [];
   const seen = new Set();
@@ -947,117 +868,129 @@ app.post("/api/events/:id/return", function (req, res) {
     return res.status(400).json({ error: "Please choose a return status for at least one device." });
   }
 
+  const serials = [];
+  for (const item of returns) {
+    serials.push(item.serial);
+  }
+
   try {
-    const events = readEvents();
-    const devices = readJsonFile(DEVICES_FILE);
-    const lookup = makeDeviceLookup(devices);
-    const event = findEventById(events, req.params.id);
+    let eventName = "";
 
-    if (!event) {
-      return res.status(404).json({ error: "Event not found" });
-    }
-    if (event.status === "Closed") {
-      return res.status(409).json({ error: "This event is already closed." });
-    }
+    await db.transaction(async function (client) {
+      const eventResult = await client.query("SELECT id, name, status FROM events WHERE id = $1 FOR UPDATE", [req.params.id]);
+      const event = eventResult.rows[0];
 
-    for (const item of returns) {
-      const assignment = findAssignment(event, item.serial);
-
-      if (!assignment) {
-        return res.status(400).json({ error: `${item.serial} is not assigned to this event.` });
+      if (!event) {
+        throw userError(404, "Event not found");
       }
-      if (assignment.returnStatus) {
-        return res.status(409).json({ error: `${item.serial} has already been checked in as ${assignment.returnStatus}. Please refresh the page.` });
+      if (event.status === "Closed") {
+        throw userError(409, "This event is already closed.");
       }
-    }
+      eventName = event.name;
 
-    const time = nowText();
+      const assignmentResult = await client.query(
+        "SELECT serial, return_status FROM assignments WHERE event_id = $1 AND serial = ANY($2) FOR UPDATE",
+        [event.id, serials]
+      );
 
-    for (const item of returns) {
-      const assignment = findAssignment(event, item.serial);
-      assignment.returnStatus = item.status;
-      assignment.returnedAt = time;
-      assignment.note = item.note;
+      const bySerial = {};
+      for (const row of assignmentResult.rows) {
+        bySerial[row.serial] = row;
+      }
 
-      const device = lookup[item.serial];
-      if (device) {
-        if (item.status === "Returned") {
-          device.status = "In Office";
-          device.event = null;
-          device.eventId = null;
-        } else {
-          device.status = item.status;
-          device.event = event.name;
-          device.eventId = event.id;
+      for (const item of returns) {
+        const assignment = bySerial[item.serial];
+        if (!assignment) {
+          throw userError(400, `${item.serial} is not assigned to this event.`);
         }
-        addHistory(device, item.status, event, item.note);
+        if (assignment.return_status) {
+          throw userError(409, `${item.serial} has already been checked in as ${assignment.return_status}. Please refresh the page.`);
+        }
       }
-    }
 
-    event.missing = countReturnStatus(event, "Lost");
+      for (const item of returns) {
+        await client.query(
+          "UPDATE assignments SET return_status = $1, returned_at = now(), note = $2 WHERE event_id = $3 AND serial = $4",
+          [item.status, item.note, event.id, item.serial]
+        );
 
-    saveJsonFile(DEVICES_FILE, devices);
-    saveJsonFile(EVENTS_FILE, events);
+        if (item.status === "Returned") {
+          await client.query("UPDATE devices SET status = 'In Office', current_event_id = NULL WHERE serial = $1", [item.serial]);
+        } else {
+          await client.query("UPDATE devices SET status = $1, current_event_id = $2 WHERE serial = $3", [item.status, event.id, item.serial]);
+        }
 
-    console.log(`Checked in ${returns.length} device(s) for ${event.name}`);
-    res.json(event);
+        await client.query(
+          "INSERT INTO device_history (serial, action, event_id, event_name, note, created_by) VALUES ($1, $2, $3, $4, $5, $6)",
+          [item.serial, item.status, event.id, event.name, item.note, userName(req)]
+        );
+      }
+    });
+
+    const updatedEvent = await loadEvent(db, req.params.id);
+    console.log(`Checked in ${returns.length} device(s) for ${eventName}`);
+    res.json(updatedEvent);
   } catch (error) {
-    console.error("Could not save returns:", error);
-    res.status(500).json({ error: "Could not save the returns. Please try again." });
+    handleError(res, error, "Could not save the returns.");
   }
 });
 
 
 // ============ API: change an event's status (dispatch or close) ============
 
-app.post("/api/events/:id/status", function (req, res) {
+app.post("/api/events/:id/status", async function (req, res) {
   const newStatus = String(req.body.status || "");
 
   try {
-    const events = readEvents();
-    const event = findEventById(events, req.params.id);
+    await db.transaction(async function (client) {
+      const eventResult = await client.query("SELECT id, status FROM events WHERE id = $1 FOR UPDATE", [req.params.id]);
+      const event = eventResult.rows[0];
 
-    if (!event) {
-      return res.status(404).json({ error: "Event not found" });
+      if (!event) {
+        throw userError(404, "Event not found");
+      }
+
+      const countResult = await client.query(`
+        SELECT count(*)::int AS total,
+               count(*) FILTER (WHERE return_status IS NULL)::int AS pending
+        FROM assignments WHERE event_id = $1
+      `, [event.id]);
+      const counts = countResult.rows[0];
+
+      if (newStatus === "Out at Event") {
+        if (event.status !== "Assigned") {
+          throw userError(409, "Only an assigned event can be marked as dispatched.");
+        }
+        if (counts.total === 0) {
+          throw userError(409, "Assign at least one device before dispatching.");
+        }
+        await client.query("UPDATE events SET status = 'Out at Event', dispatched_at = now() WHERE id = $1", [event.id]);
+      } else if (newStatus === "Closed") {
+        if (event.status === "Closed") {
+          throw userError(409, "This event is already closed.");
+        }
+        if (counts.pending > 0) {
+          throw userError(409, `${counts.pending} device(s) have not been checked in yet. Record them as Returned, Damaged or Lost before closing.`);
+        }
+        await client.query("UPDATE events SET status = 'Closed', closed_at = now() WHERE id = $1", [event.id]);
+      } else {
+        throw userError(400, "Unknown status.");
+      }
+    });
+
+    const updatedEvent = await loadEvent(db, req.params.id);
+    console.log(`${updatedEvent.name} is now ${updatedEvent.status}`);
+
+    if (updatedEvent.status === "Closed") {
+      mailer.sendEventClosedEmail(updatedEvent);
     }
 
-    if (newStatus === "Out at Event") {
-      if (event.status !== "Assigned") {
-        return res.status(409).json({ error: "Only an assigned event can be marked as dispatched." });
-      }
-      if (event.assignments.length === 0) {
-        return res.status(409).json({ error: "Assign at least one device before dispatching." });
-      }
-      event.status = "Out at Event";
-      event.dispatchedAt = nowText();
-    } else if (newStatus === "Closed") {
-      if (event.status === "Closed") {
-        return res.status(409).json({ error: "This event is already closed." });
-      }
-
-      const pending = countReturnStatus(event, null);
-      if (pending > 0) {
-        return res.status(409).json({ error: `${pending} device(s) have not been checked in yet. Record them as Returned, Damaged or Lost before closing.` });
-      }
-
-      event.status = "Closed";
-      event.closedAt = nowText();
-    } else {
-      return res.status(400).json({ error: "Unknown status." });
-    }
-
-    saveJsonFile(EVENTS_FILE, events);
-
-    console.log(`${event.name} is now ${event.status}`);
-    if (event.status === "Closed") {
-      mailer.sendEventClosedEmail(event);
-    }
-    res.json(event);
+    res.json(updatedEvent);
   } catch (error) {
-    console.error("Could not change the status:", error);
-    res.status(500).json({ error: "Could not update the event. Please try again." });
+    handleError(res, error, "Could not update the event.");
   }
 });
+
 
 // ============ API: send the assignment confirmation email ============
 
@@ -1069,7 +1002,7 @@ app.post("/api/events/:id/email/confirmation", async function (req, res) {
   }
 
   try {
-    const event = findEventById(readEvents(), req.params.id);
+    const event = await loadEvent(db, req.params.id);
 
     if (!event) {
       return res.status(404).json({ error: "Event not found" });
@@ -1087,34 +1020,39 @@ app.post("/api/events/:id/email/confirmation", async function (req, res) {
       return res.status(502).json({ error: "The email could not be sent. Please check the email settings and try again." });
     }
 
-    const events = readEvents();
-    const savedEvent = findEventById(events, req.params.id);
+    const ccText = ccList.valid.join(", ");
 
-    savedEvent.ccEmails = ccList.valid.join(", ");
-    if (!Array.isArray(savedEvent.emails)) {
-      savedEvent.emails = [];
-    }
-    savedEvent.emails.push({
-      type: "Assignment confirmation",
-      to: savedEvent.requesterEmail,
-      cc: savedEvent.ccEmails,
-      devices: savedEvent.assignments.length,
-      sentAt: nowText(),
-      by: req.user ? req.user.name : null
+    await db.transaction(async function (client) {
+      await client.query("UPDATE events SET cc_emails = $1 WHERE id = $2", [ccText, event.id]);
+      await client.query(
+        "INSERT INTO email_log (event_id, type, to_address, cc, devices, sent_by) VALUES ($1, $2, $3, $4, $5, $6)",
+        [event.id, "Assignment confirmation", event.requesterEmail, ccText, event.assignments.length, userName(req)]
+      );
     });
 
-    saveJsonFile(EVENTS_FILE, events);
-
-    res.json({ event: savedEvent, previewUrl: result.previewUrl || null });
+    const updatedEvent = await loadEvent(db, event.id);
+    res.json({ event: updatedEvent, previewUrl: result.previewUrl || null });
   } catch (error) {
-    console.error("Could not send the confirmation:", error);
-    res.status(500).json({ error: "Could not send the confirmation. Please try again." });
+    handleError(res, error, "Could not send the confirmation.");
   }
 });
+
+
 // ============ Start the server ============
 
-migrateData();
+async function start() {
+  try {
+    await db.runSchema();
+    console.log("Connected to the database.");
+  } catch (error) {
+    console.error("Could not connect to the database. Check DATABASE_URL in your .env file and that PostgreSQL is running.");
+    console.error(error.message);
+    process.exit(1);
+  }
 
-app.listen(PORT, function () {
-  console.log(`InventoryX is running at http://localhost:${PORT}`);
-});
+  app.listen(PORT, function () {
+    console.log(`InventoryX is running at http://localhost:${PORT}`);
+  });
+}
+
+start();
