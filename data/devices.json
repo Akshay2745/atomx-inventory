@@ -1,9 +1,58 @@
 [
-  { "serial": "POS-0001", "name": "POS Terminal", "category": "Payment Device", "status": "In Office", "event": null },
-  { "serial": "POS-0002", "name": "POS Terminal", "category": "Payment Device", "status": "Assigned",  "event": "Mumbai Fintech Expo" },
-  { "serial": "POS-0003", "name": "POS Terminal", "category": "Payment Device", "status": "In Office", "event": null },
-  { "serial": "POS-0004", "name": "POS Terminal", "category": "Payment Device", "status": "In Office", "event": null },
-  { "serial": "SBX-0001", "name": "Soundbox",     "category": "Payment Device", "status": "Assigned",  "event": "Pune Retail Fair" },
-  { "serial": "SBX-0002", "name": "Soundbox",     "category": "Payment Device", "status": "Missing",   "event": "Delhi Startup Summit" },
-  { "serial": "QR-0001",  "name": "QR Standee",   "category": "Display Item",   "status": "In Office", "event": null }
+  {
+    "serial": "POS-0001",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "POS-0002",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "Assigned",
+    "event": "Mumbai Fintech Expo"
+  },
+  {
+    "serial": "POS-0003",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "POS-0004",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "SBX-0001",
+    "name": "Soundbox",
+    "category": "Payment Device",
+    "status": "Assigned",
+    "event": "Pune Retail Fair"
+  },
+  {
+    "serial": "SBX-0002",
+    "name": "Soundbox",
+    "category": "Payment Device",
+    "status": "Missing",
+    "event": "Delhi Startup Summit"
+  },
+  {
+    "serial": "QR-0001",
+    "name": "QR Standee",
+    "category": "Display Item",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "1234",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  }
 ]

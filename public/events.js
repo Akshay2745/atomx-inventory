@@ -1,18 +1,32 @@
-// ============ Your events data ============
+// ============ Events data (loaded from the server) ============
 
-const events = [
-  { name: "Bengaluru Merchant Meetup", dates: "12 – 13 Oct 2026",   location: "Bengaluru", requestedBy: "Priya Sharma",  items: "4 POS Terminal, 2 Soundbox",              status: "Requested",    missing: 0 },
-  { name: "Hyderabad Payments Forum",  dates: "20 – 22 Oct 2026",   location: "Hyderabad", requestedBy: "Rohit Verma",   items: "3 Card Reader, 5 Paper Roll",             status: "Requested",    missing: 0 },
-  { name: "Chennai Trade Show",        dates: "8 – 9 Oct 2026",     location: "Chennai",   requestedBy: "Sneha Iyer",    items: "2 POS Terminal, 1 QR Standee",            status: "Assigned",     missing: 0 },
-  { name: "Mumbai Fintech Expo",       dates: "28 Sep – 1 Oct 2026", location: "Mumbai",   requestedBy: "Amit Patil",    items: "3 POS Terminal, 2 Charger, 5 Paper Roll", status: "Out at Event", missing: 0 },
-  { name: "Pune Retail Fair",          dates: "25 – 27 Sep 2026",   location: "Pune",      requestedBy: "Neha Kulkarni", items: "1 Soundbox",                              status: "Out at Event", missing: 0 },
-  { name: "Delhi Startup Summit",      dates: "15 – 16 Sep 2026",   location: "New Delhi", requestedBy: "Karan Mehta",   items: "1 Soundbox",                              status: "Closed",       missing: 1 }
-];
-
-
-// ============ Current filter ============
-
+let events = [];
 let currentFilter = "All";
+
+const tableBody = document.getElementById("events-table-body");
+
+
+// ============ Load events from the server ============
+
+async function loadEvents() {
+  tableBody.innerHTML = `<tr><td colspan="7">Loading events...</td></tr>`;
+
+  try {
+    const response = await fetch("/api/events");
+
+    if (!response.ok) {
+      throw new Error(`Could not load events (status ${response.status})`);
+    }
+
+    events = await response.json();
+
+    renderSummary();
+    renderTable();
+  } catch (error) {
+    console.error(error);
+    tableBody.innerHTML = `<tr><td colspan="7">Sorry, the events could not be loaded. Please refresh the page or try again later.</td></tr>`;
+  }
+}
 
 
 // ============ Helper functions ============
@@ -35,13 +49,15 @@ function getStatusClass(status) {
 }
 
 function getActionButton(event) {
+  const detailLink = `event-detail.html?id=${encodeURIComponent(event.id)}`;
+
   if (event.status === "Requested") {
-    return `<a href="event-detail.html" class="btn-small primary">Review</a>`;
+    return `<a href="${detailLink}" class="btn-small primary">Review</a>`;
   }
   if (event.status === "Out at Event") {
     return `<a href="return-check.html" class="btn-small">Check Return</a>`;
   }
-  return `<a href="#" class="btn-small">View</a>`;
+  return `<a href="${detailLink}" class="btn-small">View</a>`;
 }
 
 function getMissingNote(event) {
@@ -79,7 +95,6 @@ function renderSummary() {
 // ============ Build the events table ============
 
 function renderTable() {
-  const tableBody = document.getElementById("events-table-body");
   const visibleEvents = getVisibleEvents();
   tableBody.innerHTML = "";
 
@@ -127,5 +142,4 @@ for (const tab of tabs) {
 
 // ============ Start ============
 
-renderSummary();
-renderTable();
+loadEvents();

@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atomx Inventory - Event Request</title>
+  <title>Atomx Inventory - Create Event</title>
   <link rel="stylesheet" href="request.css">
 </head>
 <body>
 
   <div class="form-container">
-    <h1>Event Inventory Request</h1>
-    <p class="subtitle">Fill in your event details and the items you need. The inventory team will review your request and confirm by email.</p>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+    <h1>Create Event</h1>
+    <p class="subtitle">Create an event on behalf of a team member. It will appear on the dashboard, ready for you to assign devices.</p>
 
-    <form id="request-form" data-source="staff" data-redirect="request-success.html">
+    <form id="request-form" data-source="manager" data-redirect="dashboard.html">
 
       <fieldset>
         <legend>Event details</legend>
@@ -36,16 +37,16 @@
       </fieldset>
 
       <fieldset>
-        <legend>Your details</legend>
+        <legend>Person going to the event</legend>
 
         <div class="form-row">
           <div>
-            <label for="requester-name">Your name</label>
+            <label for="requester-name">Name</label>
             <input type="text" id="requester-name" required>
           </div>
           <div>
-            <label for="requester-email">Your email</label>
-            <input type="email" id="requester-email" placeholder="you@company.com" required>
+            <label for="requester-email">Email</label>
+            <input type="email" id="requester-email" placeholder="name@company.com" required>
           </div>
         </div>
 
@@ -68,11 +69,11 @@
       </fieldset>
 
       <label for="notes">Notes (optional)</label>
-      <textarea id="notes" rows="3" placeholder="Anything the inventory team should know"></textarea>
+      <textarea id="notes" rows="3" placeholder="Anything to remember about this event"></textarea>
 
       <p class="form-error" id="request-error"></p>
 
-      <button type="submit" class="btn-submit">Submit request</button>
+      <button type="submit" class="btn-submit">Create event</button>
 
     </form>
   </div>

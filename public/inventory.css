@@ -680,3 +680,29 @@ button.btn-secondary {
   border-radius: 50%;
   vertical-align: middle;
 }
+
+/* ---------- Header buttons ---------- */
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ---------- Assign page extras ---------- */
+
+.selection-count {
+  font-size: 13px;
+  color: #666;
+}
+
+.selection-count.complete {
+  color: #1e7a4c;
+  font-weight: bold;
+}
+
+.stock-warning {
+  margin-top: 8px;
+  color: #a15c00;
+  font-size: 13px;
+}

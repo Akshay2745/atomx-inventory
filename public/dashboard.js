@@ -94,8 +94,7 @@ function renderAttention() {
             <strong>${event.name}</strong>
             <small>New request from ${event.requestedBy}</small>
           </div>
-          <a href="event-detail.html" class="btn-small primary">Review</a>
-        </li>
+         <a href="event-detail.html?id=${encodeURIComponent(event.id)}" class="btn-small primary">Review</a>
       `;
     } else if (event.status === "Out at Event") {
       list.innerHTML += `
@@ -239,3 +238,25 @@ function renderMissing() {
 
 showTodayDate();
 loadDashboard();
+
+
+
+
+// ============ Copy the staff request link ============
+
+const copyLinkButton = document.getElementById("copy-link-btn");
+
+copyLinkButton.addEventListener("click", async function () {
+  const link = `${window.location.origin}/request.html`;
+
+  try {
+    await navigator.clipboard.writeText(link);
+    copyLinkButton.textContent = "Link copied!";
+  } catch (error) {
+    window.prompt("Copy this link and share it with your staff:", link);
+  }
+
+  setTimeout(function () {
+    copyLinkButton.textContent = "Copy staff request link";
+  }, 2000);
+});

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atomx Inventory - Review Event</title>
+  <title>Atomx Inventory - Event</title>
   <link rel="stylesheet" href="inventory.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
   <nav class="navbar">
     <div class="logo">Atomx Inventory</div>
     <ul class="nav-links">
-            <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
       <li><a href="inventory.html">Master Inventory</a></li>
       <li><a href="events.html" class="active">Events</a></li>
       <li><a href="index.html">Logout</a></li>
@@ -22,128 +22,85 @@
 
     <a href="events.html" class="back-link">← Back to Events</a>
 
-    <div class="page-header">
-      <div class="title-with-status">
-        <h2>Bengaluru Merchant Meetup</h2>
-        <span class="status status-requested">Requested</span>
+    <p class="empty-note" id="page-message">Loading event...</p>
+
+    <div id="page-content" class="hidden">
+
+      <div class="page-header">
+        <div class="title-with-status">
+          <h2 id="event-name"></h2>
+          <span class="status" id="event-status"></span>
+        </div>
       </div>
+
+      <div class="detail-grid">
+        <div class="card">
+          <h3 class="section-title">Event details</h3>
+          <dl class="details">
+            <dt>Dates</dt>
+            <dd id="event-dates"></dd>
+            <dt>Location</dt>
+            <dd id="event-location"></dd>
+            <dt>Submitted on</dt>
+            <dd id="event-created"></dd>
+            <dt>Created by</dt>
+            <dd id="event-source"></dd>
+            <dt>Notes</dt>
+            <dd id="event-notes"></dd>
+          </dl>
+        </div>
+
+        <div class="card">
+          <h3 class="section-title">Requested by</h3>
+          <dl class="details">
+            <dt>Name</dt>
+            <dd id="req-name"></dd>
+            <dt>Email</dt>
+            <dd id="req-email"></dd>
+            <dt>Phone</dt>
+            <dd id="req-phone"></dd>
+            <dt>Extra emails</dt>
+            <dd id="req-cc"></dd>
+          </dl>
+        </div>
+      </div>
+
+      <div id="assign-section" class="hidden">
+        <div class="card assign-card">
+          <h3 class="section-title">Assign devices</h3>
+          <div id="assign-groups"></div>
+
+          <div class="email-section">
+            <label class="checkbox-label">
+              <input type="checkbox" id="send-email" checked>
+              <span id="send-email-label">Send confirmation email to the requester</span>
+            </label>
+            <label for="extra-emails">Also send to</label>
+            <input type="text" id="extra-emails">
+          </div>
+        </div>
+
+        <p class="form-error" id="assign-error"></p>
+
+        <div class="form-actions">
+          <a href="events.html" class="btn-secondary">Cancel</a>
+          <button type="button" class="btn-add" id="confirm-btn">Confirm assignment</button>
+        </div>
+      </div>
+
+      <div id="assigned-section" class="hidden">
+        <div class="card assign-card">
+          <h3 class="section-title">Assigned items</h3>
+          <p class="page-subtitle" id="assigned-at"></p>
+          <ul class="panel-list" id="assigned-list"></ul>
+        </div>
+      </div>
+
     </div>
-
-    <div class="detail-grid">
-      <div class="card">
-        <h3 class="section-title">Event details</h3>
-        <dl class="details">
-          <dt>Dates</dt>
-          <dd>12 – 13 Oct 2026</dd>
-          <dt>Location</dt>
-          <dd>Bengaluru</dd>
-          <dt>Submitted on</dt>
-          <dd>24 Sep 2026</dd>
-          <dt>Notes</dt>
-          <dd>Please include extra paper rolls</dd>
-        </dl>
-      </div>
-
-      <div class="card">
-        <h3 class="section-title">Requested by</h3>
-        <dl class="details">
-          <dt>Name</dt>
-          <dd>Priya Sharma</dd>
-          <dt>Email</dt>
-          <dd>priya.sharma@company.com</dd>
-          <dt>Phone</dt>
-          <dd>98765 43210</dd>
-          <dt>Extra emails</dt>
-          <dd>coo@company.com</dd>
-        </dl>
-      </div>
-    </div>
-
-    <form action="events.html">
-
-      <div class="card assign-card">
-        <h3 class="section-title">Assign devices</h3>
-
-        <div class="assign-group">
-          <div class="assign-header">
-            <h4>POS Terminal <span class="requested-note">— requested 4</span></h4>
-            <label class="qty-control">
-              Approved quantity
-              <input type="number" name="posApproved" value="4" min="0">
-            </label>
-          </div>
-          <div class="device-list">
-            <label class="device-option">
-              <input type="checkbox" name="posSerials" value="POS-0001"> POS-0001
-            </label>
-            <label class="device-option">
-              <input type="checkbox" name="posSerials" value="POS-0003"> POS-0003
-            </label>
-            <label class="device-option">
-              <input type="checkbox" name="posSerials" value="POS-0004"> POS-0004
-            </label>
-            <label class="device-option">
-              <input type="checkbox" name="posSerials" value="POS-0005"> POS-0005
-            </label>
-            <label class="device-option">
-              <input type="checkbox" name="posSerials" value="POS-0006"> POS-0006
-            </label>
-          </div>
-        </div>
-
-        <div class="assign-group">
-          <div class="assign-header">
-            <h4>Soundbox <span class="requested-note">— requested 2</span></h4>
-            <label class="qty-control">
-              Approved quantity
-              <input type="number" name="soundboxApproved" value="2" min="0">
-            </label>
-          </div>
-          <div class="device-list">
-            <label class="device-option">
-              <input type="checkbox" name="soundboxSerials" value="SBX-0003"> SBX-0003
-            </label>
-            <label class="device-option">
-              <input type="checkbox" name="soundboxSerials" value="SBX-0004"> SBX-0004
-            </label>
-            <label class="device-option">
-              <input type="checkbox" name="soundboxSerials" value="SBX-0005"> SBX-0005
-            </label>
-          </div>
-        </div>
-
-        <div class="assign-group">
-          <div class="assign-header">
-            <h4>Extra items <span class="requested-note">— added by inventory manager</span></h4>
-          </div>
-          <label class="extra-row">
-            Charger
-            <input type="number" name="chargerQty" value="0" min="0">
-          </label>
-          <label class="extra-row">
-            Paper Roll
-            <input type="number" name="paperRollQty" value="0" min="0">
-          </label>
-        </div>
-
-        <div class="email-section">
-          <label class="checkbox-label">
-            <input type="checkbox" name="sendEmail" checked>
-            Send confirmation email to Priya Sharma
-          </label>
-          <label for="extra-emails">Also send to</label>
-          <input type="text" id="extra-emails" name="extraEmails" value="coo@company.com">
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <a href="events.html" class="btn-secondary">Cancel</a>
-        <button type="submit" class="btn-add">Confirm and send email</button>
-      </div>
-
-    </form>
 
   </main>
+
+  <script src="event-detail.js"></script>
 
 </body>
 </html>

@@ -12,6 +12,7 @@ const addPanel = document.getElementById("add-device-panel");
 const addForm = document.getElementById("add-device-form");
 const cancelButton = document.getElementById("cancel-add-btn");
 const errorText = document.getElementById("form-error");
+const saveButton = addForm.querySelector('button[type="submit"]');
 
 
 // ============ Load devices from the server ============
@@ -155,8 +156,9 @@ cancelButton.addEventListener("click", function () {
   closeAddForm();
 });
 
-addForm.addEventListener("submit", function (event) {
+addForm.addEventListener("submit", async function (event) {
   event.preventDefault();
+  errorText.textContent = "";
 
   const serial = document.getElementById("new-serial").value.trim().toUpperCase();
   const name = document.getElementById("new-name").value;
@@ -167,17 +169,34 @@ addForm.addEventListener("submit", function (event) {
     return;
   }
 
-  devices.push({
-    serial: serial,
-    name: name,
-    category: category,
-    status: "In Office",
-    event: null
-  });
+  saveButton.disabled = true;
+  saveButton.textContent = "Saving...";
 
-  renderSummary();
-  renderTable();
-  closeAddForm();
+  try {
+    const response = await fetch("/api/devices", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ serial: serial, name: name, category: category })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      errorText.textContent = result.error || "Could not save the device.";
+      return;
+    }
+
+    devices.push(result);
+    renderSummary();
+    renderTable();
+    closeAddForm();
+  } catch (error) {
+    console.error(error);
+    errorText.textContent = "Could not reach the server. Please check your connection and try again.";
+  } finally {
+    saveButton.disabled = false;
+    saveButton.textContent = "Save device";
+  }
 });
 
 

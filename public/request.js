@@ -9,6 +9,8 @@ const itemRowsContainer = document.getElementById("item-rows");
 const addItemButton = document.getElementById("add-item-btn");
 const requestForm = document.getElementById("request-form");
 const errorText = document.getElementById("request-error");
+const submitButton = requestForm.querySelector('button[type="submit"]');
+const submitButtonText = submitButton.textContent;
 
 let rowCounter = 0;
 
@@ -34,13 +36,13 @@ function addItemRow() {
   row.innerHTML = `
     <div>
       <label for="item-${rowCounter}">Item</label>
-      <select id="item-${rowCounter}" name="item" required>
+      <select id="item-${rowCounter}" required>
         ${buildOptionsHTML()}
       </select>
     </div>
     <div>
       <label for="qty-${rowCounter}">Quantity</label>
-      <input type="number" id="qty-${rowCounter}" name="qty" min="1" placeholder="0" required>
+      <input type="number" id="qty-${rowCounter}" min="1" placeholder="0" required>
     </div>
     <button type="button" class="remove-item-btn" aria-label="Remove this item">×</button>
   `;
@@ -82,28 +84,87 @@ function hasDuplicateItems() {
 }
 
 
+// ============ Collect the form data ============
+
+function getValue(id) {
+  return document.getElementById(id).value.trim();
+}
+
+function collectItems() {
+  const rows = itemRowsContainer.querySelectorAll(".item-row");
+  const items = [];
+
+  for (const row of rows) {
+    items.push({
+      name: row.querySelector("select").value,
+      qty: Number(row.querySelector('input[type="number"]').value)
+    });
+  }
+  return items;
+}
+
+
 // ============ Button and form listeners ============
 
 addItemButton.addEventListener("click", function () {
   addItemRow();
 });
 
-requestForm.addEventListener("submit", function (event) {
+requestForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
   errorText.textContent = "";
 
-  const startDate = document.getElementById("start-date").value;
-  const endDate = document.getElementById("end-date").value;
+  const startDate = getValue("start-date");
+  const endDate = getValue("end-date");
 
   if (endDate < startDate) {
-    event.preventDefault();
     errorText.textContent = "The end date can't be before the start date.";
     return;
   }
 
   if (hasDuplicateItems()) {
-    event.preventDefault();
     errorText.textContent = "You've selected the same item twice. Please combine them into one row with the total quantity.";
     return;
+  }
+
+  const eventData = {
+    eventName: getValue("event-name"),
+    startDate: startDate,
+    endDate: endDate,
+    location: getValue("location"),
+    requesterName: getValue("requester-name"),
+    requesterEmail: getValue("requester-email"),
+    requesterPhone: getValue("contact-phone"),
+    ccEmails: getValue("cc-emails"),
+    notes: getValue("notes"),
+    items: collectItems(),
+    source: requestForm.dataset.source
+  };
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Saving...";
+
+  try {
+    const response = await fetch("/api/events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(eventData)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      errorText.textContent = result.error || "Could not save the event.";
+      return;
+    }
+
+    window.location.href = requestForm.dataset.redirect;
+  } catch (error) {
+    console.error(error);
+    errorText.textContent = "Could not reach the server. Please check your connection and try again.";
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = submitButtonText;
   }
 });
 
