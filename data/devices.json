@@ -3,8 +3,9 @@
     "serial": "POS-0001",
     "name": "POS Terminal",
     "category": "Payment Device",
-    "status": "In Office",
-    "event": null
+    "status": "Assigned",
+    "event": "testing 1",
+    "eventId": "EVT-1790493689090"
   },
   {
     "serial": "POS-0002",
@@ -17,15 +18,17 @@
     "serial": "POS-0003",
     "name": "POS Terminal",
     "category": "Payment Device",
-    "status": "In Office",
-    "event": null
+    "status": "Assigned",
+    "event": "testing 1",
+    "eventId": "EVT-1790493689090"
   },
   {
     "serial": "POS-0004",
     "name": "POS Terminal",
     "category": "Payment Device",
-    "status": "In Office",
-    "event": null
+    "status": "Assigned",
+    "event": "testing 1",
+    "eventId": "EVT-1790493689090"
   },
   {
     "serial": "SBX-0001",
@@ -50,6 +53,77 @@
   },
   {
     "serial": "1234",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "Assigned",
+    "event": "testing 1",
+    "eventId": "EVT-1790493689090"
+  },
+  {
+    "serial": "123",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "456",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "2163",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "2323",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "223",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "232",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "3",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "23",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "323",
+    "name": "POS Terminal",
+    "category": "Payment Device",
+    "status": "In Office",
+    "event": null
+  },
+  {
+    "serial": "30",
     "name": "POS Terminal",
     "category": "Payment Device",
     "status": "In Office",

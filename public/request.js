@@ -1,7 +1,6 @@
 // ============ Items people can request ============
 
-const itemOptions = ["POS Terminal", "Soundbox", "Card Reader", "QR Standee", "Charger", "Paper Roll"];
-
+let itemOptions = ["POS Terminal", "Soundbox", "Card Reader", "QR Standee", "Charger", "Paper Roll"];
 
 // ============ Page elements ============
 
@@ -171,4 +170,18 @@ requestForm.addEventListener("submit", async function (event) {
 
 // ============ Start with one empty row ============
 
-addItemRow();
+async function loadItemOptions() {
+  try {
+    const response = await fetch("/api/settings");
+    if (response.ok) {
+      const settings = await response.json();
+      itemOptions = settings.deviceTypes.concat(settings.quantityItems);
+    }
+  } catch (error) {
+    console.error("Could not load the item list, using the default list", error);
+  }
+
+  addItemRow();
+}
+
+loadItemOptions();

@@ -1,7 +1,6 @@
 // ============ Settings ============
 
-const SERIAL_ITEMS = ["POS Terminal", "Soundbox", "Card Reader", "QR Standee"];
-
+const QUANTITY_ITEMS = ["Charger", "Paper Roll"];
 
 // ============ Which event? (read the id from the address) ============
 
@@ -141,7 +140,7 @@ function renderAssignForm() {
   }
 
   for (const item of currentEvent.itemsList) {
-    if (SERIAL_ITEMS.includes(item.name)) {
+   if (!QUANTITY_ITEMS.includes(item.name)) {
       const available = getAvailableDevices(item.name);
 
       let checkboxes = "";

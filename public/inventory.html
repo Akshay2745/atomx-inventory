@@ -11,11 +11,10 @@
   <nav class="navbar">
     <div class="logo">Atomx Inventory</div>
     <ul class="nav-links">
-     <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
       <li><a href="inventory.html" class="active">Master Inventory</a></li>
       <li><a href="events.html">Events</a></li>
       <li><a href="index.html">Logout</a></li>
-      
     </ul>
   </nav>
 
@@ -23,43 +22,91 @@
 
     <div class="page-header">
       <h2>Master Inventory</h2>
-      <button class="btn-add" id="add-device-btn">+ Add Device</button>
+      <div class="header-actions">
+        <button type="button" class="btn-secondary" id="manage-types-btn">Manage types</button>
+        <button type="button" class="btn-secondary" id="import-btn">Import CSV</button>
+        <button type="button" class="btn-add" id="add-device-btn">+ Add Device</button>
+      </div>
     </div>
 
+    <!-- Add devices panel -->
     <div class="card add-form hidden" id="add-device-panel">
-      <h3 class="section-title">Add a new device</h3>
+      <h3 class="section-title">Add devices</h3>
       <form id="add-device-form">
         <div class="add-form-grid">
           <div>
             <label for="new-serial">Serial number</label>
-            <input type="text" id="new-serial" placeholder="e.g. POS-0005" required>
+            <input type="text" id="new-serial" placeholder="e.g. POS-0010" required>
           </div>
           <div>
             <label for="new-name">Device type</label>
-            <select id="new-name" required>
-              <option value="">Select type</option>
-              <option value="POS Terminal">POS Terminal</option>
-              <option value="Soundbox">Soundbox</option>
-              <option value="Card Reader">Card Reader</option>
-              <option value="QR Standee">QR Standee</option>
-            </select>
+            <select id="new-name" required></select>
           </div>
           <div>
             <label for="new-category">Category</label>
-            <select id="new-category" required>
-              <option value="">Select category</option>
-              <option value="Payment Device">Payment Device</option>
-              <option value="Display Item">Display Item</option>
-              <option value="Accessory">Accessory</option>
-            </select>
+            <select id="new-category" required></select>
+          </div>
+          <div>
+            <label for="new-quantity">Quantity</label>
+            <input type="number" id="new-quantity" min="1" max="500" value="1" required>
           </div>
         </div>
+        <p class="form-hint" id="serial-preview"></p>
         <p class="form-error" id="form-error"></p>
         <div class="form-actions">
           <button type="button" class="btn-secondary" id="cancel-add-btn">Cancel</button>
-          <button type="submit" class="btn-add">Save device</button>
+          <button type="submit" class="btn-add" id="save-device-btn">Save device</button>
         </div>
       </form>
+    </div>
+
+    <!-- CSV import panel -->
+    <div class="card add-form hidden" id="import-panel">
+      <h3 class="section-title">Import devices from a CSV file</h3>
+      <ol class="import-steps">
+        <li>Download the sample file and open it in Excel or Google Sheets.</li>
+        <li>Replace the sample rows with your devices, one device per row. Keep the first row (serial, type, category) as it is.</li>
+        <li>Save it as CSV. In Excel: File → Save As → "CSV (Comma delimited)". In Google Sheets: File → Download → CSV.</li>
+        <li>Choose the file below and click Import devices.</li>
+      </ol>
+      <div class="import-actions">
+        <button type="button" class="btn-secondary" id="download-sample-btn">Download sample CSV</button>
+        <input type="file" id="csv-file" accept=".csv,text/csv">
+      </div>
+      <div class="import-results hidden" id="import-results"></div>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" id="cancel-import-btn">Cancel</button>
+        <button type="button" class="btn-add" id="start-import-btn">Import devices</button>
+      </div>
+    </div>
+
+    <!-- Device types and categories panel -->
+    <div class="card add-form hidden" id="types-panel">
+      <h3 class="section-title">Device types and categories</h3>
+      <div class="settings-grid">
+        <div>
+          <h4 class="settings-heading">Device types</h4>
+          <div class="chip-list" id="type-list"></div>
+          <form class="inline-add" id="add-type-form">
+            <input type="text" id="new-type-name" placeholder="e.g. Tablet" maxlength="40" required>
+            <button type="submit" class="btn-add">Add</button>
+          </form>
+          <p class="form-error" id="type-error"></p>
+        </div>
+        <div>
+          <h4 class="settings-heading">Categories</h4>
+          <div class="chip-list" id="category-list"></div>
+          <form class="inline-add" id="add-category-form">
+            <input type="text" id="new-category-name" placeholder="e.g. Networking" maxlength="40" required>
+            <button type="submit" class="btn-add">Add</button>
+          </form>
+          <p class="form-error" id="category-error"></p>
+        </div>
+      </div>
+      <p class="form-hint">Device types are tracked individually by serial number. New types also appear in the staff request form.</p>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" id="close-types-btn">Close</button>
+      </div>
     </div>
 
     <div class="summary-cards">
@@ -82,21 +129,21 @@
     </div>
 
     <div class="toolbar">
-      <input type="search" id="search-input" class="search-input" placeholder="Search by serial number, device or event...">
+      <input type="search" id="search-input" class="search-input" placeholder="Search device types or categories...">
     </div>
 
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
-            <th>Serial Number</th>
-            <th>Device</th>
-            <th>Category</th>
-            <th>Status</th>
-            <th>Current Event</th>
+            <th>#</th>
+            <th>Device Type</th>
+            <th>Categories</th>
+            <th>Usage</th>
+            <th></th>
           </tr>
         </thead>
-        <tbody id="device-table-body">
+        <tbody id="type-table-body">
           <!-- JavaScript fills this in -->
         </tbody>
       </table>

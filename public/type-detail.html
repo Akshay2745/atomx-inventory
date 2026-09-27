@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atomx Inventory - Track Devices</title>
+  <link rel="stylesheet" href="inventory.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">Atomx Inventory</div>
+    <ul class="nav-links">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="inventory.html" class="active">Master Inventory</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="index.html">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+
+    <a href="inventory.html" class="back-link">← Back to Master Inventory</a>
+
+    <p class="empty-note" id="page-message">Loading devices...</p>
+
+    <div id="page-content" class="hidden">
+
+      <div class="page-header">
+        <div class="title-with-icon">
+          <span class="type-icon" id="type-icon"></span>
+          <h2 id="type-name"></h2>
+          <span class="type-badge">Serials</span>
+        </div>
+      </div>
+
+      <div class="summary-cards">
+        <div class="card">
+          <h3>Total</h3>
+          <p class="card-number" id="total-count">0</p>
+        </div>
+        <div class="card">
+          <h3>Free (In Office)</h3>
+          <p class="card-number" id="office-count">0</p>
+        </div>
+        <div class="card">
+          <h3>Assigned to Events</h3>
+          <p class="card-number" id="assigned-count">0</p>
+        </div>
+        <div class="card">
+          <h3>Missing or Damaged</h3>
+          <p class="card-number" id="missing-count">0</p>
+        </div>
+      </div>
+
+      <div class="filter-tabs">
+        <button class="tab active" data-status="All">All</button>
+        <button class="tab" data-status="In Office">In Office</button>
+        <button class="tab" data-status="Assigned">Assigned</button>
+        <button class="tab" data-status="Missing">Missing</button>
+        <button class="tab" data-status="Damaged">Damaged</button>
+      </div>
+
+      <div class="toolbar">
+        <input type="search" id="search-input" class="search-input" placeholder="Search serial number or event...">
+      </div>
+
+      <p class="results-count" id="results-count"></p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Serial Number</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Current Event</th>
+            </tr>
+          </thead>
+          <tbody id="device-table-body">
+            <!-- JavaScript fills this in -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="type-detail.js"></script>
+
+</body>
+</html>

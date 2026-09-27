@@ -1,0 +1,13 @@
+{
+  "deviceTypes": [
+    "POS Terminal",
+    "Soundbox",
+    "Card Reader",
+    "QR Standee"
+  ],
+  "categories": [
+    "Payment Device",
+    "Display Item",
+    "Accessory"
+  ]
+}

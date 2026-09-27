@@ -141,8 +141,41 @@
     "items": "20 POS Terminal",
     "notes": "",
     "source": "Created by inventory manager",
+    "status": "Assigned",
+    "missing": 0,
+    "createdAt": "2026-09-27T07:21:29.166Z",
+    "assignedDevices": [
+      "POS-0001",
+      "POS-0003",
+      "POS-0004",
+      "1234"
+    ],
+    "assignedQuantities": [],
+    "sendEmail": true,
+    "assignedAt": "2026-09-27T07:31:00.400Z"
+  },
+  {
+    "id": "EVT-1790494694001",
+    "name": "Akshay testing",
+    "startDate": "2026-09-27",
+    "endDate": "2026-09-28",
+    "dates": "27 Sept 2026 – 28 Sept 2026",
+    "location": "Mumbai",
+    "requestedBy": "Akshay",
+    "requesterEmail": "akshayshewalkary@gmail.com",
+    "requesterPhone": "9322045433",
+    "ccEmails": "",
+    "itemsList": [
+      {
+        "name": "POS Terminal",
+        "qty": 10
+      }
+    ],
+    "items": "10 POS Terminal",
+    "notes": "",
+    "source": "Staff request",
     "status": "Requested",
     "missing": 0,
-    "createdAt": "2026-09-27T07:21:29.166Z"
+    "createdAt": "2026-09-27T07:38:14.078Z"
   }
 ]
