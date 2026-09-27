@@ -48,6 +48,19 @@
           <span class="action-message" id="action-message"></span>
         </div>
 
+                <div class="card assign-card add-form" id="email-card">
+          <h3 class="section-title">Email confirmation</h3>
+          <p class="page-subtitle" id="email-to"></p>
+          <label for="email-cc">Also send to (CC)</label>
+          <input type="text" id="email-cc" placeholder="e.g. coo@company.com, manager@company.com">
+          <p class="form-hint">Separate multiple emails with commas. The email lists every device assigned so far, by serial number.</p>
+          <p class="form-error" id="email-error"></p>
+          <p class="form-success" id="email-success"></p>
+          <div class="form-actions" style="justify-content: flex-start;">
+            <button type="button" class="btn-add" id="send-email-btn">Send assignment confirmation</button>
+          </div>
+          <ul class="panel-list" id="email-log"></ul>
+        </div>
         <div class="detail-grid">
           <div class="card">
             <h3 class="section-title">Event details</h3>

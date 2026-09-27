@@ -538,7 +538,19 @@ function registerAuthRoutes(app) {
 }
 
 
+function getNotificationEmails() {
+  const emails = [];
+  for (const user of readList(USERS_FILE)) {
+    if (user.active !== false) {
+      emails.push(user.email);
+    }
+  }
+  return emails;
+}
+
+
 module.exports = {
   requireLogin: requireLogin,
-  registerAuthRoutes: registerAuthRoutes
+  registerAuthRoutes: registerAuthRoutes,
+  getNotificationEmails: getNotificationEmails
 };

@@ -4,6 +4,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const auth = require("./auth");
+const mailer = require("./mailer");
 
 
 // ============ Create the server ============
@@ -826,6 +827,9 @@ app.post("/api/events", function (req, res) {
     saveJsonFile(EVENTS_FILE, events);
 
     console.log(`New event created: ${name} (${source})`);
+    if (source === "Staff request") {
+      mailer.sendNewRequestEmail(newEvent, auth.getNotificationEmails());
+    }
     res.status(201).json(newEvent);
   } catch (error) {
     console.error("Could not save event:", error);
@@ -1045,6 +1049,9 @@ app.post("/api/events/:id/status", function (req, res) {
     saveJsonFile(EVENTS_FILE, events);
 
     console.log(`${event.name} is now ${event.status}`);
+    if (event.status === "Closed") {
+      mailer.sendEventClosedEmail(event);
+    }
     res.json(event);
   } catch (error) {
     console.error("Could not change the status:", error);
@@ -1052,7 +1059,58 @@ app.post("/api/events/:id/status", function (req, res) {
   }
 });
 
+// ============ API: send the assignment confirmation email ============
 
+app.post("/api/events/:id/email/confirmation", async function (req, res) {
+  const ccList = mailer.parseEmailList(req.body.cc);
+
+  if (ccList.invalid.length > 0) {
+    return res.status(400).json({ error: `These don't look like email addresses: ${ccList.invalid.join(", ")}` });
+  }
+
+  try {
+    const event = findEventById(readEvents(), req.params.id);
+
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+    if (!event.requesterEmail) {
+      return res.status(400).json({ error: "This event has no requester email address." });
+    }
+    if (event.assignments.length === 0) {
+      return res.status(400).json({ error: "Assign at least one device before sending the confirmation." });
+    }
+
+    const result = await mailer.sendAssignmentEmail(event, ccList.valid);
+
+    if (!result.ok) {
+      return res.status(502).json({ error: "The email could not be sent. Please check the email settings and try again." });
+    }
+
+    const events = readEvents();
+    const savedEvent = findEventById(events, req.params.id);
+
+    savedEvent.ccEmails = ccList.valid.join(", ");
+    if (!Array.isArray(savedEvent.emails)) {
+      savedEvent.emails = [];
+    }
+    savedEvent.emails.push({
+      type: "Assignment confirmation",
+      to: savedEvent.requesterEmail,
+      cc: savedEvent.ccEmails,
+      devices: savedEvent.assignments.length,
+      sentAt: nowText(),
+      by: req.user ? req.user.name : null
+    });
+
+    saveJsonFile(EVENTS_FILE, events);
+
+    res.json({ event: savedEvent, previewUrl: result.previewUrl || null });
+  } catch (error) {
+    console.error("Could not send the confirmation:", error);
+    res.status(500).json({ error: "Could not send the confirmation. Please try again." });
+  }
+});
 // ============ Start the server ============
 
 migrateData();

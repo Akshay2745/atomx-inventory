@@ -208,6 +208,7 @@ function renderAll() {
   renderAssign();
   renderReturns();
   renderReport();
+  renderEmail();
 }
 
 function renderHeader() {
@@ -728,6 +729,90 @@ document.getElementById("print-btn").addEventListener("click", function () {
   window.print();
 });
 
+
+// ============ Email confirmation ============
+
+const emailCcInput = document.getElementById("email-cc");
+const sendEmailButton = document.getElementById("send-email-btn");
+const emailError = document.getElementById("email-error");
+const emailSuccess = document.getElementById("email-success");
+const emailLog = document.getElementById("email-log");
+
+function renderEmail() {
+  const toText = document.getElementById("email-to");
+
+  if (currentEvent.requesterEmail) {
+    toText.textContent = `To: ${currentEvent.requestedBy} (${currentEvent.requesterEmail})`;
+  } else {
+    toText.textContent = "This event has no requester email address.";
+  }
+
+  if (document.activeElement !== emailCcInput) {
+    emailCcInput.value = currentEvent.ccEmails || "";
+  }
+
+  sendEmailButton.disabled = currentEvent.assignments.length === 0 || !currentEvent.requesterEmail;
+
+  const emails = Array.isArray(currentEvent.emails) ? currentEvent.emails : [];
+  emailLog.innerHTML = "";
+
+  if (emails.length === 0) {
+    emailLog.innerHTML = `<li class="empty-note">${currentEvent.assignments.length === 0 ? "Assign devices first, then send the confirmation." : "No confirmation sent yet."}</li>`;
+    return;
+  }
+
+  for (let i = emails.length - 1; i >= 0; i--) {
+    const email = emails[i];
+    emailLog.innerHTML += `
+      <li>
+        <div class="list-main">
+          <strong>${escapeHTML(email.type)} (${email.devices} devices)</strong>
+          <small>To ${escapeHTML(email.to)}${email.cc ? `, CC ${escapeHTML(email.cc)}` : ""} · ${formatDateTime(email.sentAt)}${email.by ? ` · by ${escapeHTML(email.by)}` : ""}</small>
+        </div>
+        <span class="status status-returned">Sent</span>
+      </li>
+    `;
+  }
+}
+
+sendEmailButton.addEventListener("click", async function () {
+  emailError.textContent = "";
+  emailSuccess.textContent = "";
+
+  const deviceCount = currentEvent.assignments.length;
+  if (!window.confirm(`Send the confirmation with ${deviceCount} device(s) to ${currentEvent.requesterEmail}?`)) {
+    return;
+  }
+
+  sendEmailButton.disabled = true;
+  sendEmailButton.textContent = "Sending...";
+
+  try {
+    const response = await postJson(`/api/events/${encodeURIComponent(eventId)}/email/confirmation`, {
+      cc: emailCcInput.value
+    });
+
+    if (!response.ok) {
+      emailError.textContent = response.result.error || `Could not send the email (server status ${response.status}).`;
+      return;
+    }
+
+    currentEvent = response.result.event;
+    renderAll();
+
+    if (response.result.previewUrl) {
+      emailSuccess.innerHTML = `Test email created. <a href="${response.result.previewUrl}" target="_blank" rel="noopener" class="event-link">Open the preview →</a>`;
+    } else {
+      emailSuccess.textContent = "Confirmation email sent.";
+    }
+  } catch (error) {
+    console.error(error);
+    emailError.textContent = "Could not reach the server. Please try again.";
+  } finally {
+    sendEmailButton.textContent = "Send assignment confirmation";
+    renderEmail();
+  }
+});
 
 // ============ Start ============
 
