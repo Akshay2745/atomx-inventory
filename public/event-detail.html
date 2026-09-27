@@ -3,20 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atomx Inventory - Event</title>
+  <title>InventoryX - Event</title>
   <link rel="stylesheet" href="inventory.css">
 </head>
 <body>
-
-  <nav class="navbar">
-    <div class="logo">Atomx Inventory</div>
-    <ul class="nav-links">
-      <li><a href="dashboard.html">Dashboard</a></li>
-      <li><a href="inventory.html">Master Inventory</a></li>
-      <li><a href="events.html" class="active">Events</a></li>
-      <li><a href="index.html">Logout</a></li>
-    </ul>
-  </nav>
 
   <main class="container">
 
@@ -27,80 +17,153 @@
     <div id="page-content" class="hidden">
 
       <div class="page-header">
-        <div class="title-with-status">
-          <h2 id="event-name"></h2>
-          <span class="status" id="event-status"></span>
+        <div>
+          <div class="title-with-status">
+            <h2 id="event-name"></h2>
+            <span class="status" id="event-status"></span>
+          </div>
+          <p class="event-header-meta" id="event-meta"></p>
         </div>
       </div>
 
-      <div class="detail-grid">
-        <div class="card">
-          <h3 class="section-title">Event details</h3>
-          <dl class="details">
-            <dt>Dates</dt>
-            <dd id="event-dates"></dd>
-            <dt>Location</dt>
-            <dd id="event-location"></dd>
-            <dt>Submitted on</dt>
-            <dd id="event-created"></dd>
-            <dt>Created by</dt>
-            <dd id="event-source"></dd>
-            <dt>Notes</dt>
-            <dd id="event-notes"></dd>
-          </dl>
-        </div>
-
-        <div class="card">
-          <h3 class="section-title">Requested by</h3>
-          <dl class="details">
-            <dt>Name</dt>
-            <dd id="req-name"></dd>
-            <dt>Email</dt>
-            <dd id="req-email"></dd>
-            <dt>Phone</dt>
-            <dd id="req-phone"></dd>
-            <dt>Extra emails</dt>
-            <dd id="req-cc"></dd>
-          </dl>
-        </div>
+      <div class="workspace-tabs">
+        <button type="button" class="workspace-tab active" data-tab="overview">Overview</button>
+        <button type="button" class="workspace-tab" data-tab="inventory">Inventory</button>
+        <button type="button" class="workspace-tab" data-tab="report">Report</button>
       </div>
 
-      <div id="assign-section" class="hidden">
-        <div class="card assign-card">
-          <h3 class="section-title">Assign devices</h3>
-          <div id="assign-groups"></div>
+      <!-- ============ Overview tab ============ -->
+      <section id="tab-overview">
+        <div class="mini-stats">
+          <div class="mini-stat"><strong id="stat-requested">0</strong><span>Items requested</span></div>
+          <div class="mini-stat"><strong id="stat-assigned">0</strong><span>Devices assigned</span></div>
+          <div class="mini-stat"><strong id="stat-returned">0</strong><span>Returned</span></div>
+          <div class="mini-stat"><strong id="stat-pending">0</strong><span>Waiting to return</span></div>
+          <div class="mini-stat"><strong id="stat-lost">0</strong><span>Lost or damaged</span></div>
+        </div>
 
-          <div class="email-section">
-            <label class="checkbox-label">
-              <input type="checkbox" id="send-email" checked>
-              <span id="send-email-label">Send confirmation email to the requester</span>
-            </label>
-            <label for="extra-emails">Also send to</label>
-            <input type="text" id="extra-emails">
+        <div class="workspace-actions">
+          <button type="button" class="btn-add hidden" id="dispatch-btn">Mark as dispatched</button>
+          <button type="button" class="btn-secondary hidden" id="close-btn">Close event</button>
+          <span class="action-message" id="action-message"></span>
+        </div>
+
+        <div class="detail-grid">
+          <div class="card">
+            <h3 class="section-title">Event details</h3>
+            <dl class="details">
+              <dt>Dates</dt>
+              <dd id="event-dates"></dd>
+              <dt>Location</dt>
+              <dd id="event-location"></dd>
+              <dt>Submitted on</dt>
+              <dd id="event-created"></dd>
+              <dt>Created by</dt>
+              <dd id="event-source"></dd>
+              <dt>Notes</dt>
+              <dd id="event-notes"></dd>
+            </dl>
+          </div>
+
+          <div class="card">
+            <h3 class="section-title">Requested by</h3>
+            <dl class="details">
+              <dt>Name</dt>
+              <dd id="req-name"></dd>
+              <dt>Email</dt>
+              <dd id="req-email"></dd>
+              <dt>Phone</dt>
+              <dd id="req-phone"></dd>
+              <dt>Extra emails</dt>
+              <dd id="req-cc"></dd>
+            </dl>
           </div>
         </div>
 
-        <p class="form-error" id="assign-error"></p>
-
-        <div class="form-actions">
-          <a href="events.html" class="btn-secondary">Cancel</a>
-          <button type="button" class="btn-add" id="confirm-btn">Confirm assignment</button>
-        </div>
-      </div>
-
-      <div id="assigned-section" class="hidden">
         <div class="card assign-card">
-          <h3 class="section-title">Assigned items</h3>
-          <p class="page-subtitle" id="assigned-at"></p>
-          <ul class="panel-list" id="assigned-list"></ul>
+          <h3 class="section-title">Requested items</h3>
+          <ul class="panel-list" id="requested-list"></ul>
         </div>
-      </div>
+      </section>
+
+      <!-- ============ Inventory tab (assign and return) ============ -->
+      <section id="tab-inventory" class="hidden">
+
+        <p class="info-box hidden" id="closed-note">This event is closed. Devices can no longer be assigned or returned for it. See the Report tab for the full record.</p>
+
+        <div class="card assign-card" id="assign-section">
+          <h3 class="section-title">Assign devices</h3>
+          <div class="section-toolbar">
+            <select id="type-select" class="toolbar-select" aria-label="Device type"></select>
+            <input type="search" id="assign-search" class="search-input" placeholder="Search serial number...">
+            <button type="button" class="btn-secondary" id="select-all-btn">Select all shown</button>
+          </div>
+          <p class="results-count" id="available-count"></p>
+          <div class="device-list scroll" id="available-list"></div>
+          <div class="selection-bar">
+            <span class="selection-count" id="selected-count">0 selected</span>
+            <button type="button" class="btn-add" id="assign-btn">Assign selected</button>
+          </div>
+          <p class="form-error" id="assign-error"></p>
+          <p class="form-success" id="assign-success"></p>
+        </div>
+
+        <div class="card assign-card" id="return-section">
+          <h3 class="section-title">Return devices</h3>
+          <div class="section-toolbar">
+            <input type="search" id="return-search" class="search-input" placeholder="Search assigned serial number...">
+            <button type="button" class="btn-secondary" id="all-returned-btn">Mark all shown as returned</button>
+          </div>
+          <p class="results-count" id="pending-count"></p>
+          <div id="return-list"></div>
+          <div class="selection-bar">
+            <span class="selection-count" id="return-selected-count">0 marked</span>
+            <button type="button" class="btn-add" id="save-returns-btn">Save returns</button>
+          </div>
+          <p class="form-error" id="return-error"></p>
+          <p class="form-success" id="return-success"></p>
+        </div>
+
+      </section>
+
+      <!-- ============ Report tab ============ -->
+      <section id="tab-report" class="hidden">
+        <div class="workspace-actions no-print">
+          <button type="button" class="btn-add" id="download-csv-btn">Download CSV</button>
+          <button type="button" class="btn-secondary" id="print-btn">Print / Save as PDF</button>
+        </div>
+
+        <div class="card assign-card">
+          <h3 class="section-title">Assignment report</h3>
+          <p class="page-subtitle" id="report-subtitle"></p>
+        </div>
+
+        <div class="mini-stats" id="report-stats"></div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Serial Number</th>
+                <th>Type</th>
+                <th>Assigned On</th>
+                <th>Return Status</th>
+                <th>Checked In On</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody id="report-body"></tbody>
+          </table>
+        </div>
+      </section>
 
     </div>
 
   </main>
 
   <script src="event-detail.js"></script>
+  <script src="layout.js"></script>
 
 </body>
 </html>

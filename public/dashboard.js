@@ -3,6 +3,8 @@
 let devices = [];
 let events = [];
 
+const AVATAR_COLORS = ["#6366f1", "#0ea5e9", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6", "#14b8a6", "#ef4444"];
+
 
 // ============ Load everything the dashboard needs ============
 
@@ -21,8 +23,8 @@ async function loadDashboard() {
     events = await eventsResponse.json();
 
     renderCards();
+    renderRecentEvents();
     renderAttention();
-    renderUpcoming();
     renderDeviceTypes();
     renderMissing();
   } catch (error) {
@@ -34,6 +36,15 @@ async function loadDashboard() {
 
 // ============ Helper functions ============
 
+function escapeHTML(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 function countDevices(status) {
   let count = 0;
   for (const device of devices) {
@@ -44,12 +55,14 @@ function countDevices(status) {
   return count;
 }
 
-function getTodayString() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+function countEvents(status) {
+  let count = 0;
+  for (const event of events) {
+    if (event.status === status) {
+      count++;
+    }
+  }
+  return count;
 }
 
 function getEventStatusClass(status) {
@@ -59,24 +72,98 @@ function getEventStatusClass(status) {
   return "status-closed";
 }
 
-function showTodayDate() {
-  const today = new Date();
-  document.getElementById("today-date").textContent = today.toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric"
-  });
+function getInitials(name) {
+  const words = String(name || "").trim().split(/\s+/);
+  const first = words[0] ? words[0][0] : "";
+  const second = words[1] ? words[1][0] : "";
+  return (first + second).toUpperCase() || "?";
+}
+
+function getColorForName(name) {
+  let total = 0;
+  for (const character of String(name || "")) {
+    total += character.charCodeAt(0);
+  }
+  return AVATAR_COLORS[total % AVATAR_COLORS.length];
+}
+
+function formatShortDate(dateText) {
+  if (!dateText) return "—";
+  const date = new Date(dateText + "T00:00:00");
+  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+}
+
+function getEventLink(event) {
+  const base = `event-detail.html?id=${encodeURIComponent(event.id)}`;
+  if (event.status === "Requested" || event.status === "Out at Event") {
+    return `${base}&tab=inventory`;
+  }
+  return base;
 }
 
 
-// ============ Summary cards ============
+// ============ Greeting ============
+
+function showGreeting() {
+  const hour = new Date().getHours();
+  let greeting = "Good evening";
+
+  if (hour < 12) {
+    greeting = "Good morning";
+  } else if (hour < 17) {
+    greeting = "Good afternoon";
+  }
+
+  const name = window.currentUser ? window.currentUser.name.toUpperCase() : "";
+  document.getElementById("greeting").textContent = `${greeting}, ${name} 👋`;
+}
+
+
+// ============ Stat cards ============
 
 function renderCards() {
   document.getElementById("total-count").textContent = devices.length;
   document.getElementById("office-count").textContent = countDevices("In Office");
   document.getElementById("assigned-count").textContent = countDevices("Assigned");
-  document.getElementById("missing-count").textContent = countDevices("Missing") + countDevices("Damaged");
+  document.getElementById("requests-count").textContent = countEvents("Requested");
+}
+
+
+// ============ Recent events table ============
+
+function renderRecentEvents() {
+  const tableBody = document.getElementById("recent-events");
+  document.getElementById("event-count").textContent = events.length;
+
+  const sorted = events.slice();
+  sorted.sort(function (a, b) {
+    return (b.startDate || "").localeCompare(a.startDate || "");
+  });
+
+  tableBody.innerHTML = "";
+
+  if (sorted.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="3">No events yet. Click "+ Create Event" to add one.</td></tr>`;
+    return;
+  }
+
+  for (const event of sorted.slice(0, 6)) {
+    tableBody.innerHTML += `
+      <tr>
+        <td>
+          <div class="event-cell">
+            <span class="event-avatar" style="background-color: ${getColorForName(event.name)}">${escapeHTML(getInitials(event.name))}</span>
+            <div>
+              <a href="${getEventLink(event)}">${escapeHTML(event.name)}</a>
+              <small>${escapeHTML(event.location)}</small>
+            </div>
+          </div>
+        </td>
+        <td>${formatShortDate(event.startDate)}</td>
+        <td class="text-right"><span class="status ${getEventStatusClass(event.status)}">${escapeHTML(event.status)}</span></td>
+      </tr>
+    `;
+  }
 }
 
 
@@ -91,64 +178,26 @@ function renderAttention() {
       list.innerHTML += `
         <li>
           <div class="list-main">
-            <strong>${event.name}</strong>
-            <small>New request from ${event.requestedBy}</small>
+            <strong>${escapeHTML(event.name)}</strong>
+            <small>New request from ${escapeHTML(event.requestedBy)}</small>
           </div>
-         <a href="event-detail.html?id=${encodeURIComponent(event.id)}" class="btn-small primary">Review</a>
+          <a href="event-detail.html?id=${encodeURIComponent(event.id)}" class="btn-small primary">Review</a>
+        </li>
       `;
     } else if (event.status === "Out at Event") {
       list.innerHTML += `
         <li>
           <div class="list-main">
-            <strong>${event.name}</strong>
-            <small>Devices out, return check pending</small>
+            <strong>${escapeHTML(event.name)}</strong>
+            <small>Return check pending</small>
           </div>
-          <a href="return-check.html" class="btn-small">Check Return</a>
-        </li>
+                    <a href="event-detail.html?id=${encodeURIComponent(event.id)}&tab=inventory" class="btn-small">Check Return</a>
       `;
     }
   }
 
   if (list.innerHTML === "") {
     list.innerHTML = `<li class="empty-note">All caught up. Nothing needs your attention right now.</li>`;
-  }
-}
-
-
-// ============ Upcoming events ============
-
-function renderUpcoming() {
-  const list = document.getElementById("upcoming-list");
-  const today = getTodayString();
-  const upcoming = [];
-
-  for (const event of events) {
-    if (event.status !== "Closed" && event.startDate >= today) {
-      upcoming.push(event);
-    }
-  }
-
-  upcoming.sort(function (a, b) {
-    return a.startDate.localeCompare(b.startDate);
-  });
-
-  list.innerHTML = "";
-
-  if (upcoming.length === 0) {
-    list.innerHTML = `<li class="empty-note">No upcoming events.</li>`;
-    return;
-  }
-
-  for (const event of upcoming.slice(0, 5)) {
-    list.innerHTML += `
-      <li>
-        <div class="list-main">
-          <strong>${event.name}</strong>
-          <small>${event.dates} · ${event.location}</small>
-        </div>
-        <span class="status ${getEventStatusClass(event.status)}">${event.status}</span>
-      </li>
-    `;
   }
 }
 
@@ -185,20 +234,17 @@ function renderDeviceTypes() {
 
   for (const name in groups) {
     const group = groups[name];
-    const officePercent = (group.office / group.total) * 100;
-    const assignedPercent = (group.assigned / group.total) * 100;
-    const missingPercent = (group.missing / group.total) * 100;
 
     container.innerHTML += `
       <div class="type-row">
         <div class="type-row-header">
-          <strong>${name}</strong>
-          <span>${group.office} of ${group.total} in office</span>
+          <strong>${escapeHTML(name)}</strong>
+          <span>${group.office} of ${group.total} free</span>
         </div>
         <div class="bar">
-          <div class="bar-office" style="width: ${officePercent}%"></div>
-          <div class="bar-assigned" style="width: ${assignedPercent}%"></div>
-          <div class="bar-missing" style="width: ${missingPercent}%"></div>
+          <div class="bar-office" style="width: ${(group.office / group.total) * 100}%"></div>
+          <div class="bar-assigned" style="width: ${(group.assigned / group.total) * 100}%"></div>
+          <div class="bar-missing" style="width: ${(group.missing / group.total) * 100}%"></div>
         </div>
       </div>
     `;
@@ -219,27 +265,19 @@ function renderMissing() {
       list.innerHTML += `
         <li>
           <div class="list-main">
-            <strong>${device.serial}</strong>
-            <small>${device.name} · ${device.event || "No event recorded"}</small>
+            <strong>${escapeHTML(device.serial)}</strong>
+            <small>${escapeHTML(device.name)} · ${escapeHTML(device.event || "No event recorded")}</small>
           </div>
-          <span class="status ${statusClass}">${device.status}</span>
+          <span class="status ${statusClass}">${escapeHTML(device.status)}</span>
         </li>
       `;
     }
   }
 
   if (list.innerHTML === "") {
-    list.innerHTML = `<li class="empty-note">No missing or damaged devices. Everything is accounted for.</li>`;
+    list.innerHTML = `<li class="empty-note">Everything is accounted for.</li>`;
   }
 }
-
-
-// ============ Start ============
-
-showTodayDate();
-loadDashboard();
-
-
 
 
 // ============ Copy the staff request link ============
@@ -260,3 +298,9 @@ copyLinkButton.addEventListener("click", async function () {
     copyLinkButton.textContent = "Copy staff request link";
   }, 2000);
 });
+
+
+// ============ Start ============
+
+showGreeting();
+loadDashboard();

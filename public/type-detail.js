@@ -60,7 +60,7 @@ async function loadPage() {
 // ============ Helper functions ============
 
 function escapeHTML(value) {
-  return String(value)
+  return String(value === null || value === undefined ? "" : value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -87,7 +87,7 @@ function countByStatus(status) {
 function getStatusClass(status) {
   if (status === "In Office") return "status-office";
   if (status === "Assigned") return "status-assigned";
-  if (status === "Missing") return "status-missing";
+  if (status === "Lost") return "status-lost";
   if (status === "Damaged") return "status-damaged";
   return "status-closed";
 }
@@ -96,10 +96,13 @@ function getEventCell(device) {
   if (!device.event) {
     return "—";
   }
+
+  const prefix = device.status === "Lost" || device.status === "Damaged" ? `${device.status} at ` : "";
+
   if (device.eventId) {
-    return `<a href="event-detail.html?id=${encodeURIComponent(device.eventId)}" class="event-link">${escapeHTML(device.event)}</a>`;
+    return `${prefix}<a href="event-detail.html?id=${encodeURIComponent(device.eventId)}" class="event-link">${escapeHTML(device.event)}</a>`;
   }
-  return escapeHTML(device.event);
+  return prefix + escapeHTML(device.event);
 }
 
 function getVisibleDevices() {
@@ -123,7 +126,7 @@ function getVisibleDevices() {
 // ============ Fill in the page ============
 
 function renderHeader() {
-  document.title = `Atomx Inventory - ${typeName}`;
+  document.title = `InventoryX - ${typeName}`;
   document.getElementById("type-name").textContent = typeName;
   document.getElementById("type-icon").innerHTML = BOX_ICON;
 }
@@ -132,7 +135,7 @@ function renderSummary() {
   document.getElementById("total-count").textContent = typeDevices.length;
   document.getElementById("office-count").textContent = countByStatus("In Office");
   document.getElementById("assigned-count").textContent = countByStatus("Assigned");
-  document.getElementById("missing-count").textContent = countByStatus("Missing") + countByStatus("Damaged");
+  document.getElementById("missing-count").textContent = countByStatus("Lost") + countByStatus("Damaged");
 }
 
 function renderTabCounts() {
@@ -167,7 +170,7 @@ function renderTable() {
     tableBody.innerHTML += `
       <tr>
         <td class="row-number">${rowNumber}</td>
-        <td><strong>${escapeHTML(device.serial)}</strong></td>
+        <td><a href="device-detail.html?serial=${encodeURIComponent(device.serial)}" class="event-link"><strong>${escapeHTML(device.serial)}</strong></a></td>
         <td>${escapeHTML(device.category)}</td>
         <td><span class="status ${getStatusClass(device.status)}">${escapeHTML(device.status)}</span></td>
         <td>${getEventCell(device)}</td>

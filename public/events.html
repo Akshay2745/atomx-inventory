@@ -11,7 +11,7 @@
   <nav class="navbar">
     <div class="logo">Atomx Inventory</div>
     <ul class="nav-links">
-     <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
       <li><a href="inventory.html">Master Inventory</a></li>
       <li><a href="events.html" class="active">Events</a></li>
       <li><a href="index.html">Logout</a></li>
@@ -21,38 +21,97 @@
   <main class="container">
 
     <div class="page-header">
-      <h2>Events</h2>
-      <a href="request.html" target="_blank" rel="noopener" class="btn-add">Open request form</a>
+      <div>
+        <h2>Events</h2>
+        <p class="page-subtitle">Plan, assign and track devices for every event.</p>
+      </div>
+      <a href="create-event.html" class="btn-add">+ Create Event</a>
     </div>
 
-    <div class="summary-cards">
-      <div class="card">
-        <h3>New Requests</h3>
-        <p class="card-number" id="requested-count">0</p>
+    <div class="stat-cards">
+      <div class="stat-card">
+        <span class="stat-icon icon-purple">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </span>
+        <div>
+          <p class="stat-number" id="total-count">0</p>
+          <p class="stat-label">Total Events</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Assigned</h3>
-        <p class="card-number" id="assigned-count">0</p>
+      <div class="stat-card">
+        <span class="stat-icon icon-amber">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+        </span>
+        <div>
+          <p class="stat-number" id="requested-count">0</p>
+          <p class="stat-label">New Requests</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Out at Event</h3>
-        <p class="card-number" id="out-count">0</p>
+      <div class="stat-card">
+        <span class="stat-icon icon-blue">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </span>
+        <div>
+          <p class="stat-number" id="assigned-count">0</p>
+          <p class="stat-label">Assigned</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Closed</h3>
-        <p class="card-number" id="closed-count">0</p>
+      <div class="stat-card">
+        <span class="stat-icon icon-green">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </span>
+        <div>
+          <p class="stat-number" id="out-count">0</p>
+          <p class="stat-label">Out at Event</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon icon-gray">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </span>
+        <div>
+          <p class="stat-number" id="closed-count">0</p>
+          <p class="stat-label">Closed</p>
+        </div>
       </div>
     </div>
 
-    <div class="filter-tabs">
-      <button class="tab active" data-status="All">All</button>
-      <button class="tab" data-status="Requested">Requested</button>
-      <button class="tab" data-status="Assigned">Assigned</button>
-      <button class="tab" data-status="Out at Event">Out at Event</button>
-      <button class="tab" data-status="Closed">Closed</button>
+    <div class="card events-toolbar">
+      <div class="search-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="search-input" placeholder="Search events, location or requester..." aria-label="Search events">
+      </div>
+
+      <select id="status-filter" class="toolbar-select" aria-label="Filter by status">
+        <option value="All">All statuses</option>
+        <option value="Requested">Requested</option>
+        <option value="Assigned">Assigned</option>
+        <option value="Out at Event">Out at Event</option>
+        <option value="Closed">Closed</option>
+      </select>
+
+      <button type="button" class="toolbar-button" id="sort-btn">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v18"/><path d="M3 7l4-4 4 4"/><path d="M17 21V3"/><path d="M21 17l-4 4-4-4"/></svg>
+        <span id="sort-label">Newest first</span>
+      </button>
+
+      <div class="view-toggle">
+        <button type="button" class="view-btn active" data-view="grid" aria-label="Grid view">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </button>
+        <button type="button" class="view-btn" data-view="list" aria-label="List view">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+      </div>
     </div>
 
-    <div class="table-wrapper">
+    <p class="results-count" id="results-count"></p>
+
+    <div class="event-grid" id="event-grid">
+      <p class="empty-note">Loading events...</p>
+    </div>
+
+    <div class="table-wrapper hidden" id="event-list">
       <table>
         <thead>
           <tr>
@@ -65,14 +124,12 @@
             <th>Action</th>
           </tr>
         </thead>
-        <tbody id="events-table-body">
-          <!-- JavaScript fills this in -->
-        </tbody>
+        <tbody id="events-table-body"></tbody>
       </table>
     </div>
 
   </main>
-
+  <script src="layout.js"></script>
   <script src="events.js"></script>
 
 </body>

@@ -14,6 +14,7 @@ const EVENTS_FILE = path.join(__dirname, "data", "events.json");
 const SETTINGS_FILE = path.join(__dirname, "data", "settings.json");
 
 const QUANTITY_ITEMS = ["Charger", "Paper Roll"];
+const RETURN_STATUSES = ["Returned", "Damaged", "Lost"];
 const DEFAULT_SETTINGS = {
   deviceTypes: ["POS Terminal", "Soundbox", "Card Reader", "QR Standee"],
   categories: ["Payment Device", "Display Item", "Accessory"]
@@ -35,6 +36,10 @@ function readJsonFile(filePath) {
 function saveJsonFile(filePath, data) {
   const text = JSON.stringify(data, null, 2);
   fs.writeFileSync(filePath, text);
+}
+
+function nowText() {
+  return new Date().toISOString();
 }
 
 
@@ -99,7 +104,8 @@ function buildDevice(rawSerial, rawName, rawCategory, settings) {
       name: name,
       category: category,
       status: "In Office",
-      event: null
+      event: null,
+      history: []
     }
   };
 }
@@ -130,8 +136,29 @@ function getExistingSerials(devices) {
   return existing;
 }
 
+function makeDeviceLookup(devices) {
+  const lookup = {};
+  for (const device of devices) {
+    lookup[device.serial] = device;
+  }
+  return lookup;
+}
 
-// ============ Helpers: events (with automatic fix for old events) ============
+function addHistory(device, action, event, note) {
+  if (!Array.isArray(device.history)) {
+    device.history = [];
+  }
+  device.history.push({
+    action: action,
+    eventId: event ? event.id : null,
+    eventName: event ? event.name : null,
+    date: nowText(),
+    note: note || ""
+  });
+}
+
+
+// ============ Helpers: events ============
 
 function parseItemsText(text) {
   const list = [];
@@ -167,11 +194,27 @@ function readEvents() {
       event.itemsList = parseItemsText(event.items);
       changed = true;
     }
+    if (!Array.isArray(event.assignments)) {
+      event.assignments = [];
+      const oldSerials = Array.isArray(event.assignedDevices) ? event.assignedDevices : [];
+      for (const serial of oldSerials) {
+        event.assignments.push({
+          serial: serial,
+          name: "",
+          assignedAt: event.assignedAt || null,
+          returnStatus: null,
+          returnedAt: null,
+          note: ""
+        });
+      }
+      delete event.assignedDevices;
+      changed = true;
+    }
   }
 
   if (changed) {
     saveJsonFile(EVENTS_FILE, events);
-    console.log("Updated old events with ids and item lists");
+    console.log("Updated events to the latest format");
   }
 
   return events;
@@ -184,6 +227,34 @@ function findEventById(events, id) {
     }
   }
   return null;
+}
+
+function findEventByName(events, name) {
+  for (const event of events) {
+    if (event.name === name) {
+      return event;
+    }
+  }
+  return null;
+}
+
+function findAssignment(event, serial) {
+  for (const assignment of event.assignments) {
+    if (assignment.serial === serial) {
+      return assignment;
+    }
+  }
+  return null;
+}
+
+function countReturnStatus(event, status) {
+  let count = 0;
+  for (const assignment of event.assignments) {
+    if (assignment.returnStatus === status) {
+      count++;
+    }
+  }
+  return count;
 }
 
 
@@ -203,6 +274,72 @@ function formatDateRange(startDate, endDate) {
     return formatDate(startDate);
   }
   return `${formatDate(startDate)} – ${formatDate(endDate)}`;
+}
+
+
+// ============ Update older saved data to the latest format ============
+
+function migrateData() {
+  try {
+    const events = readEvents();
+    const devices = readJsonFile(DEVICES_FILE);
+    const lookup = makeDeviceLookup(devices);
+    let changed = false;
+
+    for (const device of devices) {
+      if (device.status === "Missing") {
+        device.status = "Lost";
+        changed = true;
+      }
+      if (!Array.isArray(device.history)) {
+        device.history = [];
+        changed = true;
+      }
+
+      if (device.event && !device.eventId) {
+        const event = findEventByName(events, device.event);
+        if (event) {
+          device.eventId = event.id;
+          if (!findAssignment(event, device.serial)) {
+            const alreadyCheckedIn = device.status === "Lost" || device.status === "Damaged";
+            event.assignments.push({
+              serial: device.serial,
+              name: device.name,
+              assignedAt: event.assignedAt || null,
+              returnStatus: alreadyCheckedIn ? device.status : null,
+              returnedAt: null,
+              note: ""
+            });
+          }
+          changed = true;
+        }
+      }
+    }
+
+    for (const event of events) {
+      for (const assignment of event.assignments) {
+        if (!assignment.name) {
+          const device = lookup[assignment.serial];
+          assignment.name = device ? device.name : "Device";
+          changed = true;
+        }
+      }
+
+      const lostCount = countReturnStatus(event, "Lost");
+      if (event.assignments.length > 0 && event.missing !== lostCount) {
+        event.missing = lostCount;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      saveJsonFile(DEVICES_FILE, devices);
+      saveJsonFile(EVENTS_FILE, events);
+      console.log("Updated saved data for the event workspace");
+    }
+  } catch (error) {
+    console.error("Could not update saved data:", error);
+  }
 }
 
 
@@ -257,7 +394,7 @@ app.post("/api/settings/categories", function (req, res) {
 });
 
 
-// ============ API: send the device list ============
+// ============ API: devices ============
 
 app.get("/api/devices", function (req, res) {
   try {
@@ -268,8 +405,22 @@ app.get("/api/devices", function (req, res) {
   }
 });
 
+app.get("/api/devices/:serial", function (req, res) {
+  try {
+    const devices = readJsonFile(DEVICES_FILE);
+    const lookup = makeDeviceLookup(devices);
+    const device = lookup[String(req.params.serial).toUpperCase()];
 
-// ============ API: add one or more devices (same type, serials in sequence) ============
+    if (!device) {
+      return res.status(404).json({ error: "Device not found" });
+    }
+
+    res.json(device);
+  } catch (error) {
+    console.error("Could not read device:", error);
+    res.status(500).json({ error: "Could not load the device" });
+  }
+});
 
 app.post("/api/devices", function (req, res) {
   const quantity = req.body.quantity === undefined ? 1 : Number(req.body.quantity);
@@ -316,7 +467,8 @@ app.post("/api/devices", function (req, res) {
         name: first.device.name,
         category: first.device.category,
         status: "In Office",
-        event: null
+        event: null,
+        history: []
       };
       devices.push(newDevice);
       added.push(newDevice);
@@ -324,16 +476,13 @@ app.post("/api/devices", function (req, res) {
 
     saveJsonFile(DEVICES_FILE, devices);
 
-    console.log(`Added ${added.length} device(s): ${serials[0]}${added.length > 1 ? " to " + serials[serials.length - 1] : ""}`);
+    console.log(`Added ${added.length} device(s)`);
     res.status(201).json({ added: added });
   } catch (error) {
     console.error("Could not save devices:", error);
     res.status(500).json({ error: "Could not save the devices. Please try again." });
   }
 });
-
-
-// ============ API: import many devices from a CSV file ============
 
 app.post("/api/devices/bulk", function (req, res) {
   const rows = Array.isArray(req.body.devices) ? req.body.devices : [];
@@ -399,7 +548,7 @@ app.post("/api/devices/bulk", function (req, res) {
 });
 
 
-// ============ API: send the events list ============
+// ============ API: events ============
 
 app.get("/api/events", function (req, res) {
   try {
@@ -409,9 +558,6 @@ app.get("/api/events", function (req, res) {
     res.status(500).json({ error: "Could not load events" });
   }
 });
-
-
-// ============ API: send one event ============
 
 app.get("/api/events/:id", function (req, res) {
   try {
@@ -427,9 +573,6 @@ app.get("/api/events/:id", function (req, res) {
     res.status(500).json({ error: "Could not load the event" });
   }
 });
-
-
-// ============ API: create a new event ============
 
 app.post("/api/events", function (req, res) {
   const body = req.body;
@@ -523,7 +666,8 @@ app.post("/api/events", function (req, res) {
       source: source,
       status: "Requested",
       missing: 0,
-      createdAt: new Date().toISOString()
+      assignments: [],
+      createdAt: nowText()
     };
 
     events.push(newEvent);
@@ -542,11 +686,8 @@ app.post("/api/events", function (req, res) {
 
 app.post("/api/events/:id/assign", function (req, res) {
   const rawSerials = Array.isArray(req.body.serials) ? req.body.serials : [];
-  const rawQuantities = Array.isArray(req.body.quantityItems) ? req.body.quantityItems : [];
-  const extraEmails = String(req.body.extraEmails || "").trim();
-  const sendEmail = req.body.sendEmail === true;
-
   const serials = [];
+
   for (const rawSerial of rawSerials) {
     const serial = String(rawSerial || "").trim().toUpperCase();
     if (serial !== "" && !serials.includes(serial)) {
@@ -554,74 +695,67 @@ app.post("/api/events/:id/assign", function (req, res) {
     }
   }
 
-  const quantityItems = [];
-  for (const item of rawQuantities) {
-    const itemName = String(item.name || "").trim();
-    const qty = Number(item.qty);
-
-    if (!QUANTITY_ITEMS.includes(itemName)) {
-      return res.status(400).json({ error: `"${itemName}" is not a valid quantity item.` });
-    }
-    if (!Number.isInteger(qty) || qty < 0) {
-      return res.status(400).json({ error: `Quantity for ${itemName} must be a whole number.` });
-    }
-    if (qty > 0) {
-      quantityItems.push({ name: itemName, qty: qty });
-    }
+  if (serials.length === 0) {
+    return res.status(400).json({ error: "Please select at least one device to assign." });
   }
-
-  if (serials.length === 0 && quantityItems.length === 0) {
-    return res.status(400).json({ error: "Please assign at least one device or item." });
+  if (serials.length > MAX_DEVICES_AT_ONCE) {
+    return res.status(400).json({ error: `You can assign up to ${MAX_DEVICES_AT_ONCE} devices at a time.` });
   }
 
   try {
     const events = readEvents();
     const devices = readJsonFile(DEVICES_FILE);
+    const lookup = makeDeviceLookup(devices);
     const event = findEventById(events, req.params.id);
 
     if (!event) {
       return res.status(404).json({ error: "Event not found" });
     }
-
-    if (event.status !== "Requested") {
-      return res.status(409).json({ error: "This event has already been assigned." });
+    if (event.status === "Closed") {
+      return res.status(409).json({ error: "This event is closed. Devices can't be assigned to it anymore." });
     }
 
-    const devicesToAssign = [];
+    const toAssign = [];
     for (const serial of serials) {
-      let found = null;
-      for (const device of devices) {
-        if (device.serial === serial) {
-          found = device;
-        }
-      }
+      const device = lookup[serial];
 
-      if (!found) {
+      if (!device) {
         return res.status(400).json({ error: `Device ${serial} was not found in the inventory.` });
       }
-      if (found.status !== "In Office") {
-        return res.status(409).json({ error: `${serial} is not available (currently ${found.status}). Please refresh the page.` });
+      if (device.status !== "In Office") {
+        const where = device.event ? ` at ${device.event}` : "";
+        return res.status(409).json({ error: `${serial} is not available (currently ${device.status}${where}). Please refresh the page.` });
       }
-      devicesToAssign.push(found);
+      toAssign.push(device);
     }
 
-    for (const device of devicesToAssign) {
+    const time = nowText();
+
+    for (const device of toAssign) {
       device.status = "Assigned";
       device.event = event.name;
       device.eventId = event.id;
+      addHistory(device, "Assigned", event, "");
+
+      event.assignments.push({
+        serial: device.serial,
+        name: device.name,
+        assignedAt: time,
+        returnStatus: null,
+        returnedAt: null,
+        note: ""
+      });
     }
 
-    event.status = "Assigned";
-    event.assignedDevices = serials;
-    event.assignedQuantities = quantityItems;
-    event.ccEmails = extraEmails;
-    event.sendEmail = sendEmail;
-    event.assignedAt = new Date().toISOString();
+    if (event.status === "Requested") {
+      event.status = "Assigned";
+      event.assignedAt = time;
+    }
 
     saveJsonFile(DEVICES_FILE, devices);
     saveJsonFile(EVENTS_FILE, events);
 
-    console.log(`Assigned ${serials.length} devices to ${event.name}`);
+    console.log(`Assigned ${toAssign.length} device(s) to ${event.name}`);
     res.json(event);
   } catch (error) {
     console.error("Could not assign devices:", error);
@@ -630,8 +764,147 @@ app.post("/api/events/:id/assign", function (req, res) {
 });
 
 
+// ============ API: check devices back in (returned, damaged or lost) ============
+
+app.post("/api/events/:id/return", function (req, res) {
+  const rawReturns = Array.isArray(req.body.returns) ? req.body.returns : [];
+  const returns = [];
+  const seen = new Set();
+
+  for (const item of rawReturns) {
+    const serial = String(item.serial || "").trim().toUpperCase();
+    const status = String(item.status || "");
+    const note = String(item.note || "").trim().slice(0, 300);
+
+    if (!RETURN_STATUSES.includes(status)) {
+      return res.status(400).json({ error: `"${status}" is not a valid return status.` });
+    }
+    if (serial === "" || seen.has(serial)) {
+      continue;
+    }
+
+    seen.add(serial);
+    returns.push({ serial: serial, status: status, note: note });
+  }
+
+  if (returns.length === 0) {
+    return res.status(400).json({ error: "Please choose a return status for at least one device." });
+  }
+
+  try {
+    const events = readEvents();
+    const devices = readJsonFile(DEVICES_FILE);
+    const lookup = makeDeviceLookup(devices);
+    const event = findEventById(events, req.params.id);
+
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+    if (event.status === "Closed") {
+      return res.status(409).json({ error: "This event is already closed." });
+    }
+
+    for (const item of returns) {
+      const assignment = findAssignment(event, item.serial);
+
+      if (!assignment) {
+        return res.status(400).json({ error: `${item.serial} is not assigned to this event.` });
+      }
+      if (assignment.returnStatus) {
+        return res.status(409).json({ error: `${item.serial} has already been checked in as ${assignment.returnStatus}. Please refresh the page.` });
+      }
+    }
+
+    const time = nowText();
+
+    for (const item of returns) {
+      const assignment = findAssignment(event, item.serial);
+      assignment.returnStatus = item.status;
+      assignment.returnedAt = time;
+      assignment.note = item.note;
+
+      const device = lookup[item.serial];
+      if (device) {
+        if (item.status === "Returned") {
+          device.status = "In Office";
+          device.event = null;
+          device.eventId = null;
+        } else {
+          device.status = item.status;
+          device.event = event.name;
+          device.eventId = event.id;
+        }
+        addHistory(device, item.status, event, item.note);
+      }
+    }
+
+    event.missing = countReturnStatus(event, "Lost");
+
+    saveJsonFile(DEVICES_FILE, devices);
+    saveJsonFile(EVENTS_FILE, events);
+
+    console.log(`Checked in ${returns.length} device(s) for ${event.name}`);
+    res.json(event);
+  } catch (error) {
+    console.error("Could not save returns:", error);
+    res.status(500).json({ error: "Could not save the returns. Please try again." });
+  }
+});
+
+
+// ============ API: change an event's status (dispatch or close) ============
+
+app.post("/api/events/:id/status", function (req, res) {
+  const newStatus = String(req.body.status || "");
+
+  try {
+    const events = readEvents();
+    const event = findEventById(events, req.params.id);
+
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    if (newStatus === "Out at Event") {
+      if (event.status !== "Assigned") {
+        return res.status(409).json({ error: "Only an assigned event can be marked as dispatched." });
+      }
+      if (event.assignments.length === 0) {
+        return res.status(409).json({ error: "Assign at least one device before dispatching." });
+      }
+      event.status = "Out at Event";
+      event.dispatchedAt = nowText();
+    } else if (newStatus === "Closed") {
+      if (event.status === "Closed") {
+        return res.status(409).json({ error: "This event is already closed." });
+      }
+
+      const pending = countReturnStatus(event, null);
+      if (pending > 0) {
+        return res.status(409).json({ error: `${pending} device(s) have not been checked in yet. Record them as Returned, Damaged or Lost before closing.` });
+      }
+
+      event.status = "Closed";
+      event.closedAt = nowText();
+    } else {
+      return res.status(400).json({ error: "Unknown status." });
+    }
+
+    saveJsonFile(EVENTS_FILE, events);
+
+    console.log(`${event.name} is now ${event.status}`);
+    res.json(event);
+  } catch (error) {
+    console.error("Could not change the status:", error);
+    res.status(500).json({ error: "Could not update the event. Please try again." });
+  }
+});
+
+
 // ============ Start the server ============
 
+migrateData();
+
 app.listen(PORT, function () {
-  console.log(`Atomx Inventory is running at http://localhost:${PORT}`);
+  console.log(`InventoryX is running at http://localhost:${PORT}`);
 });
