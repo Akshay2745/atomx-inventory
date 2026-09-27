@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "start": "node --env-file-if-exists=.env server.js"
+   "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "db:import": "node --env-file-if-exists=.env scripts/import-json.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
   "homepage": "https://github.com/Akshay2745/atomx-inventory#readme",
   "dependencies": {
     "express": "^5.2.1",
-    "nodemailer": "^10.0.11"
+    "nodemailer": "^10.0.11",
+    "pg": "^8.23.0"
   }
 }
