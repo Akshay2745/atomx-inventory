@@ -36,10 +36,38 @@
     collapse: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>`
   };
 
+
+  // ============ Small helpers ============
+
+  function escapeHTML(value) {
+    return String(value === null || value === undefined ? "" : value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function getTodayString() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  function formatShortDate(text) {
+    if (!text) return "";
+    return new Date(text + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  }
+
   function navItem(key, href, icon, label, extraAttributes) {
     const activeClass = key === pageInfo.key ? " active" : "";
     return `<a href="${href}" class="nav-item${activeClass}" title="${label}" ${extraAttributes || ""}>${icon}<span class="nav-label">${label}</span></a>`;
   }
+
+
+  // ============ Build the layout ============
 
   function buildLayout() {
     const main = document.querySelector("main");
@@ -92,10 +120,19 @@
             <p class="breadcrumb"><span>InventoryX</span> / <strong>${pageInfo.title}</strong></p>
           </div>
           <div class="topbar-right">
-            <a href="events.html" class="bell-btn" aria-label="New event requests">
-              ${ICONS.bell}
-              <span class="bell-badge hidden" id="bell-badge">0</span>
-            </a>
+            <div class="bell-wrap">
+              <button type="button" class="bell-btn" id="bell-btn" aria-label="Notifications" aria-expanded="false">
+                ${ICONS.bell}
+                <span class="bell-badge hidden" id="bell-badge">0</span>
+              </button>
+              <div class="notif-panel hidden" id="notif-panel">
+                <div class="notif-header"><strong>Notifications</strong></div>
+                <ul class="notif-list" id="notif-list">
+                  <li class="notif-empty">Loading...</li>
+                </ul>
+                <a href="events.html" class="notif-footer">View all events →</a>
+              </div>
+            </div>
             <a href="users.html" class="user-chip" style="text-decoration: none; color: inherit;">
               <span class="user-avatar" id="user-avatar">…</span>
               <div class="user-text">
@@ -149,9 +186,13 @@
       window.location.href = "/index.html";
     });
 
+    setUpNotifications();
     loadCurrentUser();
-    loadBellCount();
+    loadNotifications();
   }
+
+
+  // ============ Signed-in user ============
 
   async function loadCurrentUser() {
     try {
@@ -174,28 +215,125 @@
     }
   }
 
-  async function loadBellCount() {
+
+  // ============ Notification panel ============
+
+  function setUpNotifications() {
+    const bellButton = document.getElementById("bell-btn");
+    const panel = document.getElementById("notif-panel");
+
+    function closePanel() {
+      panel.classList.add("hidden");
+      bellButton.setAttribute("aria-expanded", "false");
+    }
+
+    bellButton.addEventListener("click", function (event) {
+      event.stopPropagation();
+      const isNowHidden = panel.classList.toggle("hidden");
+      bellButton.setAttribute("aria-expanded", isNowHidden ? "false" : "true");
+    });
+
+    document.addEventListener("click", function (event) {
+      if (!panel.contains(event.target) && !bellButton.contains(event.target)) {
+        closePanel();
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closePanel();
+      }
+    });
+  }
+
+  async function loadNotifications() {
+    const list = document.getElementById("notif-list");
+    const badge = document.getElementById("bell-badge");
+
     try {
       const response = await fetch("/api/events");
-      if (!response.ok) return;
+      if (!response.ok) {
+        list.innerHTML = `<li class="notif-empty">Could not load notifications.</li>`;
+        return;
+      }
 
       const events = await response.json();
-      let newRequests = 0;
+      const today = getTodayString();
+      const overdue = [];
+      const requests = [];
+
       for (const event of events) {
+        const link = `event-detail.html?id=${encodeURIComponent(event.id)}&tab=inventory`;
+
         if (event.status === "Requested") {
-          newRequests++;
+          requests.push({
+            kind: "request",
+            title: `New request: ${event.name}`,
+            detail: `From ${event.requestedBy} · ${event.dates}`,
+            link: link,
+            sortKey: event.createdAt || ""
+          });
+        }
+
+        const isOut = event.status === "Assigned" || event.status === "Out at Event";
+        if (isOut && event.endDate && event.endDate < today) {
+          let pending = 0;
+          for (const assignment of event.assignments || []) {
+            if (!assignment.returnStatus) {
+              pending++;
+            }
+          }
+
+          if (pending > 0) {
+            overdue.push({
+              kind: "overdue",
+              title: `Overdue return: ${event.name}`,
+              detail: `Ended ${formatShortDate(event.endDate)} · ${pending} device(s) not returned`,
+              link: link,
+              sortKey: event.endDate
+            });
+          }
         }
       }
 
-      if (newRequests > 0) {
-        const badge = document.getElementById("bell-badge");
-        badge.textContent = newRequests > 9 ? "9+" : newRequests;
+      overdue.sort(function (a, b) { return a.sortKey.localeCompare(b.sortKey); });
+      requests.sort(function (a, b) { return b.sortKey.localeCompare(a.sortKey); });
+
+      const items = overdue.concat(requests);
+
+      if (items.length > 0) {
+        badge.textContent = items.length > 9 ? "9+" : items.length;
         badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
       }
+
+      if (items.length === 0) {
+        list.innerHTML = `<li class="notif-empty">You're all caught up. No new requests or overdue returns.</li>`;
+        return;
+      }
+
+      let html = "";
+      for (const item of items.slice(0, 20)) {
+        html += `
+          <li>
+            <a href="${item.link}" class="notif-item ${item.kind}">
+              <span class="notif-dot"></span>
+              <span>
+                <strong>${escapeHTML(item.title)}</strong>
+                <small>${escapeHTML(item.detail)}</small>
+              </span>
+            </a>
+          </li>
+        `;
+      }
+      list.innerHTML = html;
     } catch (error) {
-      console.warn("Could not load the notification count", error);
+      console.warn("Could not load notifications", error);
+      list.innerHTML = `<li class="notif-empty">Could not load notifications.</li>`;
     }
   }
+
 
   buildLayout();
 
