@@ -48,7 +48,7 @@
           <span class="action-message" id="action-message"></span>
         </div>
 
-                <div class="card assign-card add-form" id="email-card">
+        <div class="card assign-card add-form" id="email-card">
           <h3 class="section-title">Email confirmation</h3>
           <p class="page-subtitle" id="email-to"></p>
           <label for="email-cc">Also send to (CC)</label>
@@ -61,6 +61,7 @@
           </div>
           <ul class="panel-list" id="email-log"></ul>
         </div>
+
         <div class="detail-grid">
           <div class="card">
             <h3 class="section-title">Event details</h3>
@@ -106,6 +107,13 @@
 
         <div class="card assign-card" id="assign-section">
           <h3 class="section-title">Assign devices</h3>
+
+          <div class="scan-bar">
+            <input type="text" id="assign-scan-input" class="scan-input" placeholder="Scan or type a serial number, then press Enter" autocomplete="off" autocapitalize="characters" spellcheck="false">
+            <button type="button" class="btn-secondary scan-camera-btn" data-target="assign">Scan with camera</button>
+          </div>
+          <ul class="scan-log" id="assign-scan-log"></ul>
+
           <div class="section-toolbar">
             <select id="type-select" class="toolbar-select" aria-label="Device type"></select>
             <input type="search" id="assign-search" class="search-input" placeholder="Search serial number...">
@@ -123,6 +131,14 @@
 
         <div class="card assign-card" id="return-section">
           <h3 class="section-title">Return devices</h3>
+
+          <div class="scan-bar">
+            <input type="text" id="return-scan-input" class="scan-input" placeholder="Scan or type a returned serial number, then press Enter" autocomplete="off" autocapitalize="characters" spellcheck="false">
+            <button type="button" class="btn-secondary scan-camera-btn" data-target="return">Scan with camera</button>
+          </div>
+          <p class="scan-hint">Scanned devices are marked Returned. Change any of them to Damaged or Lost below before saving.</p>
+          <ul class="scan-log" id="return-scan-log"></ul>
+
           <div class="section-toolbar">
             <input type="search" id="return-search" class="search-input" placeholder="Search assigned serial number...">
             <button type="button" class="btn-secondary" id="all-returned-btn">Mark all shown as returned</button>
@@ -175,6 +191,7 @@
 
   </main>
 
+  <script src="scanner.js"></script>
   <script src="event-detail.js"></script>
   <script src="layout.js"></script>
 

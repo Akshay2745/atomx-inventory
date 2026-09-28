@@ -45,6 +45,17 @@ const returnSuccess = document.getElementById("return-success");
 
 const reportBody = document.getElementById("report-body");
 
+const emailCcInput = document.getElementById("email-cc");
+const sendEmailButton = document.getElementById("send-email-btn");
+const emailError = document.getElementById("email-error");
+const emailSuccess = document.getElementById("email-success");
+const emailLog = document.getElementById("email-log");
+
+const assignScanInput = document.getElementById("assign-scan-input");
+const returnScanInput = document.getElementById("return-scan-input");
+const assignScanLog = document.getElementById("assign-scan-log");
+const returnScanLog = document.getElementById("return-scan-log");
+
 
 // ============ Load the event, devices and settings ============
 
@@ -399,7 +410,7 @@ function renderAssign() {
 
   if (!typeName) {
     availableCount.textContent = "";
-    availableList.innerHTML = `<p class="empty-note">No device types yet. Add one on the Master Inventory page.</p>`;
+    availableList.innerHTML = `<p class="empty-note">No device types yet. Add one on the Device Types page.</p>`;
     updateSelectedCount();
     return;
   }
@@ -470,6 +481,7 @@ assignButton.addEventListener("click", async function () {
     selectedSerials.clear();
     await reloadDevices();
     renderAll();
+    assignScanLog.innerHTML = "";
     assignSuccess.textContent = `Assigned ${serials.length} device(s) to this event.`;
   } catch (error) {
     console.error(error);
@@ -614,6 +626,7 @@ saveReturnsButton.addEventListener("click", async function () {
     returnNotes = {};
     await reloadDevices();
     renderAll();
+    returnScanLog.innerHTML = "";
     returnSuccess.textContent = `Checked in ${returns.length} device(s).`;
   } catch (error) {
     console.error(error);
@@ -732,12 +745,6 @@ document.getElementById("print-btn").addEventListener("click", function () {
 
 // ============ Email confirmation ============
 
-const emailCcInput = document.getElementById("email-cc");
-const sendEmailButton = document.getElementById("send-email-btn");
-const emailError = document.getElementById("email-error");
-const emailSuccess = document.getElementById("email-success");
-const emailLog = document.getElementById("email-log");
-
 function renderEmail() {
   const toText = document.getElementById("email-to");
 
@@ -813,6 +820,159 @@ sendEmailButton.addEventListener("click", async function () {
     renderEmail();
   }
 });
+
+
+// ============ Barcode scanning ============
+
+let audioContext = null;
+
+function playBeep(success) {
+  try {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.value = success ? 880 : 220;
+    gain.gain.value = 0.15;
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + (success ? 0.12 : 0.35));
+  } catch (error) {
+    // Sound isn't available; scanning still works
+  }
+
+  if (navigator.vibrate) {
+    navigator.vibrate(success ? 60 : [80, 60, 80]);
+  }
+}
+
+function addScanLog(list, serial, ok, message) {
+  const item = document.createElement("li");
+  item.className = ok ? "scan-ok" : "scan-error";
+  item.innerHTML = `<strong>${escapeHTML(serial)}</strong><span>${escapeHTML(message)}</span>`;
+  list.prepend(item);
+
+  while (list.children.length > 6) {
+    list.lastElementChild.remove();
+  }
+}
+
+function findDeviceBySerial(serial) {
+  for (const device of devices) {
+    if (device.serial === serial) {
+      return device;
+    }
+  }
+  return null;
+}
+
+function findAssignmentBySerial(serial) {
+  for (const assignment of currentEvent.assignments) {
+    if (assignment.serial === serial) {
+      return assignment;
+    }
+  }
+  return null;
+}
+
+function handleAssignScan(rawValue) {
+  const serial = String(rawValue || "").trim().toUpperCase();
+  if (serial === "" || !currentEvent || isClosed()) return;
+
+  const device = findDeviceBySerial(serial);
+
+  if (!device) {
+    addScanLog(assignScanLog, serial, false, "Not found in the inventory");
+    playBeep(false);
+    return;
+  }
+  if (selectedSerials.has(serial)) {
+    addScanLog(assignScanLog, serial, false, "Already selected");
+    playBeep(false);
+    return;
+  }
+  if (device.status === "Assigned" && device.eventId === currentEvent.id) {
+    addScanLog(assignScanLog, serial, false, "Already assigned to this event");
+    playBeep(false);
+    return;
+  }
+  if (device.status !== "In Office") {
+    const where = device.event ? ` at ${device.event}` : "";
+    addScanLog(assignScanLog, serial, false, `Not available (${device.status}${where})`);
+    playBeep(false);
+    return;
+  }
+
+  selectedSerials.add(serial);
+
+  const hasOption = Array.from(typeSelect.options).some(function (option) {
+    return option.value === device.name;
+  });
+  if (hasOption) {
+    typeSelect.value = device.name;
+  }
+
+  renderAssign();
+  addScanLog(assignScanLog, serial, true, `${device.name} selected. Click Assign when done.`);
+  playBeep(true);
+}
+
+function handleReturnScan(rawValue) {
+  const serial = String(rawValue || "").trim().toUpperCase();
+  if (serial === "" || !currentEvent || isClosed()) return;
+
+  const assignment = findAssignmentBySerial(serial);
+
+  if (!assignment) {
+    addScanLog(returnScanLog, serial, false, "Not assigned to this event");
+    playBeep(false);
+    return;
+  }
+  if (assignment.returnStatus) {
+    addScanLog(returnScanLog, serial, false, `Already checked in as ${assignment.returnStatus}`);
+    playBeep(false);
+    return;
+  }
+  if (returnChoices[serial]) {
+    addScanLog(returnScanLog, serial, false, "Already marked");
+    playBeep(false);
+    return;
+  }
+
+  returnChoices[serial] = "returned";
+  renderReturns();
+  addScanLog(returnScanLog, serial, true, `${assignment.name} marked Returned. Click Save returns when done.`);
+  playBeep(true);
+}
+
+function connectScanInput(input, handler) {
+  input.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handler(input.value);
+      input.value = "";
+    }
+  });
+}
+
+connectScanInput(assignScanInput, handleAssignScan);
+connectScanInput(returnScanInput, handleReturnScan);
+
+for (const button of document.querySelectorAll(".scan-camera-btn")) {
+  button.addEventListener("click", function () {
+    if (button.dataset.target === "assign") {
+      window.CameraScanner.open(handleAssignScan, "Scan devices to assign");
+    } else {
+      window.CameraScanner.open(handleReturnScan, "Scan returned devices");
+    }
+  });
+}
+
 
 // ============ Start ============
 
