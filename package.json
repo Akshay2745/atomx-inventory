@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-   "scripts": {
+  "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
     "db:import": "node --env-file-if-exists=.env scripts/import-json.js"
+  },
+  "engines": {
+    "node": "24.x"
   },
   "repository": {
     "type": "git",
